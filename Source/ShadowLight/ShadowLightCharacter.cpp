@@ -2,7 +2,6 @@
 
 
 #include "ShadowLightCharacter.h"
-#include "DrawDebugHelpers.h"
 #include "Components/BoxComponent.h"
 #include "Components/StaticMeshComponent.h"
 #include "GameFramework/SpringArmComponent.h"
@@ -23,6 +22,7 @@ AShadowLightCharacter::AShadowLightCharacter()
   BoxColl->SetVisibility(true);
   BoxColl->SetHiddenInGame(false);
   BoxColl->InitBoxExtent(FVector(50.0f, 50.0f, 50.0f));
+	BoxColl->SetRelativeLocation(FVector(0.0f, 0.0f, 10.0f));
   Sprite = CreateDefaultSubobject<UStaticMeshComponent>("Sprite");
 	Sprite->SetupAttachment(SceneCmp);
 	SpringArm = CreateDefaultSubobject<USpringArmComponent>("SpringArm");
@@ -39,6 +39,7 @@ void AShadowLightCharacter::BeginPlay()
 {
 	Super::BeginPlay();
 	
+	MovementComp->InitComponent(BoxColl);
 	AnimationCmp->InitComponent(Sprite);
 }
 
@@ -50,51 +51,7 @@ void AShadowLightCharacter::Tick(float DeltaTime)
 	FVector2D mov(VerticalMovement, HorizontalMovement);
 	MovementComp->Move(mov);
 
-  if (mov != FVector2D(0.0f, 0.0f))
-  {
-    float offset = 100;
-    float distance = 500;
-    TArray<FVector> directions;
-    if (mov.X != 0.0f)
-    {
-      directions.Add(FVector::ForwardVector * (abs(mov.X) / mov.X));
-    }
-    if (mov.Y != 0.0f)
-    {
-      directions.Add(FVector::RightVector * (abs(mov.Y) / mov.Y));
-    }
-    for (int i = 0; i < directions.Num(); ++i)
-    {
-      FVector Start;
-      if (BoxColl)
-      {
-        Start = BoxColl->GetComponentLocation() + directions[i] * offset;
-      }
-      else
-      {
-        Start = GetActorLocation() + directions[i] * offset;
-      }
-      FVector End = Start + directions[i] * distance;
-      
-      FCollisionQueryParams TraceParams;
-      FHitResult Hit;
-      bool hitted = GetWorld()->LineTraceSingleByChannel(Hit, Start, End, ECC_Visibility, TraceParams);
-
-      GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Blue, directions[i].ToString());
-      GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Red, Start.ToString());
-      GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Yellow, End.ToString());
-      GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Green, hitted ? "Hitted" : "Meh");
-      
-      DrawDebugLine(
-        GetWorld(),
-        Start,
-        End,
-        FColor(255, 0, 0),
-        false, 100.0f, 0,
-        10.0f
-      );
-    }
-  }
+  
 }
 
 // Called to bind functionality to input

@@ -25,11 +25,21 @@ public:
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
 	UFUNCTION(BlueprintCallable)
+	virtual void InitComponent(class UBoxComponent* coll);
+
+	UFUNCTION(BlueprintCallable)
 	virtual void Move(FVector2D movement);
 
 
   FVector2D Movement;
+  class UBoxComponent* BoxColl;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = MovementData)
   float MovementSpeed = 1000.0f;
+
+
+  UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Debug)
+	bool DebugLine = false;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Debug)
+	bool DebugData = false;
 };
