@@ -3,28 +3,27 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "GameFramework/Actor.h"
-#include "lightBlocker.generated.h"
+#include "Components/ActorComponent.h"
+#include "LightBlocker.generated.h"
 
-class UPaperSpriteComponent;
 
-UCLASS()
-class SHADOWLIGHT_API AlightBlocker : public AActor
+UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
+class SHADOWLIGHT_API ULightBlocker : public UActorComponent
 {
 	GENERATED_BODY()
-	
+
 public:	
-	// Sets default values for this actor's properties
-	AlightBlocker();
+	// Sets default values for this component's properties
+	ULightBlocker();
 
 protected:
-	// Called when the game starts or when spawned
+	// Called when the game starts
 	virtual void BeginPlay() override;
 
 public:	
 	// Called every frame
-	virtual void Tick(float DeltaTime) override;
+	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
-	/*UPROPERTY(EditAnywhere,BlueprintReadWrite)
-	UPaperSpriteComponent* sprite;*/
+	UPROPERTY(EditAnywhere,BlueprintReadWrite)
+	TArray<FVector2D> points;
 };

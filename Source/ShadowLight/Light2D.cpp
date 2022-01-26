@@ -4,7 +4,7 @@
 #include "Light2D.h"
 #include "DrawDebugHelpers.h"
 #include "Kismet/GameplayStatics.h"
-#include "lightBlocker.h"
+#include "LightBlocker.h"
 
 
 // Sets default values
@@ -105,15 +105,15 @@ void ALight2D::calculateLight()
 	ordered.clear();
 	temp.clear();
 	auto world = GetWorld();
-	TArray<AActor*> found;
-	UGameplayStatics::GetAllActorsOfClass(world,AlightBlocker::StaticClass(),found);
+	TArray<UActorComponent*> found;
+	UGameplayStatics::GetAll(world,ALightBlocker::StaticClass(),found);
 
 	location = FVector2D(GetActorLocation().X,GetActorLocation().Y);
 
 	float foundNum =found.Num();
 
 	for(i=0;i<foundNum;++i){
-		auto blocker = Cast<AlightBlocker>(found[i]);
+		auto blocker = Cast<ALightBlocker>(found[i]);
 
 		auto center = blocker->GetActorLocation();
 
