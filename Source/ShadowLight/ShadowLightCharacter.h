@@ -34,7 +34,7 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = PlayerComponents)
 	class USceneComponent* SceneCmp;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = PlayerComponents)
-	class UBoxComponent* RootBox;
+	class UBoxComponent* BoxColl;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = PlayerComponents)
 	class UStaticMeshComponent* Sprite;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = PlayerComponents)
