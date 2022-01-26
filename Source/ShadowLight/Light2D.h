@@ -27,6 +27,10 @@ public:
 	// Sets default values for this actor's properties
 	ALight2D();
 
+	UFUNCTION(BlueprintCallable)
+	bool
+	isInLight(AActor* actor);
+
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;

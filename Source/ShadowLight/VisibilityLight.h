@@ -4,17 +4,17 @@
 
 #include "CoreMinimal.h"
 #include "Components/ActorComponent.h"
-#include "LightBlocker.generated.h"
+#include "VisibilityLight.generated.h"
 
 
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
-class SHADOWLIGHT_API ULightBlocker : public UActorComponent
+class SHADOWLIGHT_API UVisibilityLight : public UActorComponent
 {
 	GENERATED_BODY()
 
 public:	
 	// Sets default values for this component's properties
-	ULightBlocker();
+	UVisibilityLight();
 
 protected:
 	// Called when the game starts
@@ -24,6 +24,9 @@ public:
 	// Called every frame
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
-	UPROPERTY(EditAnywhere,BlueprintReadWrite)
-	TArray<FVector2D> points;
+	UPROPERTY(BlueprintReadWrite)
+	bool isInLight;
+
+	UPROPERTY(BlueprintReadWrite)
+	float visibility = 0;
 };
