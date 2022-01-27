@@ -37,6 +37,6 @@ void ASceneObject::Tick(float DeltaTime)
 	Super::Tick(DeltaTime);
 
   FVector loc = GetActorLocation();
-  SetActorLocation(FVector(loc.X, loc.Y, loc.X * 0.01f + 150.0f));
+  SetActorLocation(FVector(loc.X, loc.Y, -loc.X * 0.1f + 150.0f));
 }
 
