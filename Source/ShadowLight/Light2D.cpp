@@ -5,6 +5,7 @@
 #include "DrawDebugHelpers.h"
 #include "Kismet/GameplayStatics.h"
 #include "SceneObject.h"
+#include "Components/BoxComponent.h"
 
 
 // Sets default values
@@ -25,8 +26,13 @@ void ALight2D::BeginPlay()
 bool 
 ALight2D::isInLight(AActor* actor)
 {
+	return isPosInLight(FVector2D(actor->GetActorLocation().X,actor->GetActorLocation().Y));
+}
+
+bool ALight2D::isPosInLight(const FVector2D& _location)
+{
 	Line line;
-	line.setFromPoints(FVector2D(actor->GetActorLocation().X,actor->GetActorLocation().Y),location);
+	line.setFromPoints(_location,location);
 	for(Line& lin : lines){
 		if(line.intersect(lin,result)){
 			return false;
@@ -127,16 +133,16 @@ void ALight2D::calculateLight()
 
 	for(i=0;i<foundNum;++i){
 		auto blocker = Cast<ASceneObject>(found[i]);
-
+		auto box = Cast<UBoxComponent>(blocker->GetComponentByClass(UBoxComponent::StaticClass()))->GetCollisionShape().GetBox();
 		auto center = blocker->GetActorLocation();
 
 		//GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString::Printf(TEXT("Some variable values: x: %f, y: %f"),center.X , center.Y));
 
 
-		worldPoints.push_back(center+FVector(100,100,0));
-		worldPoints.push_back(center+FVector(-100,100,0));
-		worldPoints.push_back(center+FVector(100,-100,0));
-		worldPoints.push_back(center+FVector(-100,-100,0));
+		worldPoints.push_back(center+FVector(box.X*1.5f,box.Y*1.5f,0));
+		worldPoints.push_back(center+FVector(-box.X*1.5f,box.Y*1.5f,0));
+		worldPoints.push_back(center+FVector(box.X*1.5f,-box.Y*1.5f,0));
+		worldPoints.push_back(center+FVector(-box.X*1.5f,-box.Y*1.5f,0));
 
 		points.push_back(FVector2D(worldPoints[i*4+0].X, worldPoints[i*4+0].Y));
 		points.push_back(FVector2D(worldPoints[i*4+1].X, worldPoints[i*4+1].Y));
@@ -331,4 +337,9 @@ bool Line::isInBounds(FVector2D point)
 {
 	
 	return FVector2D::Distance(point,start)<magnitud && FVector2D::Distance(point,end)<magnitud;
+}
+
+FVector2D Line::getPerpendicular()
+{
+	return FVector2D(x,y).GetSafeNormal();
 }

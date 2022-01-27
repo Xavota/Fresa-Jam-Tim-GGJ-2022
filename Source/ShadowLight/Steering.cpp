@@ -56,7 +56,7 @@ USteering::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTi
 	}
 
 
-	aceleration = (desiredVelocity - velocity)*acelerationMultiplier;
+	aceleration = (desiredVelocity - velocity)*acelerationMultiplier+externalForze;
 
 	if(aceleration.Size() > maxAceleration){
 		aceleration = aceleration.GetSafeNormal()*maxAceleration;
@@ -76,7 +76,12 @@ USteering::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTi
 		forward = velocity.GetSafeNormal();
 		
 	}
-	
+	externalForze = FVector2D::ZeroVector;
+}
+
+void USteering::addForze(const FVector2D& forze)
+{
+	externalForze += forze;
 }
 
 

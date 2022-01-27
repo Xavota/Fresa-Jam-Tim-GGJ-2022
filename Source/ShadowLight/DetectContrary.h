@@ -4,17 +4,17 @@
 
 #include "CoreMinimal.h"
 #include "Components/ActorComponent.h"
-#include "Steering.generated.h"
+#include "DetectContrary.generated.h"
 
 
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
-class SHADOWLIGHT_API USteering : public UActorComponent
+class SHADOWLIGHT_API UDetectContrary : public UActorComponent
 {
 	GENERATED_BODY()
 
 public:	
 	// Sets default values for this component's properties
-	USteering();
+	UDetectContrary();
 
 protected:
 	// Called when the game starts
@@ -24,33 +24,9 @@ public:
 	// Called every frame
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
-	void 
-	addForze(const FVector2D& forze);
+	UPROPERTY(EditAnywhere,BlueprintReadWrite)
+	float distance = 0;
 
 	UPROPERTY(EditAnywhere,BlueprintReadWrite)
-	float maxVelocity = 200;
-
-	UPROPERTY(EditAnywhere,BlueprintReadWrite)
-	float acelerationMultiplier = 1;
-
-	UPROPERTY(EditAnywhere,BlueprintReadWrite)
-	float maxAceleration = 100;
-
-	UPROPERTY(EditAnywhere,BlueprintReadWrite)
-	float aceptanceRadius = 50;
-
-	UPROPERTY(EditAnywhere,BlueprintReadWrite)
-	float arrivingRadius = 100;
-
-	FVector2D velocity;
-
-	FVector2D aceleration;
-
-	UPROPERTY(EditAnywhere,BlueprintReadWrite)
-	FVector2D pointToGo;
-
-	UPROPERTY(EditAnywhere,BlueprintReadWrite)
-	FVector2D forward;
-	
-	FVector2D externalForze;
+	float fear = 0;
 };

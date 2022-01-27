@@ -15,6 +15,7 @@ class Line{
 	void setFromPoints(FVector2D _start,FVector2D _end);
 	bool intersect(Line& other,FVector2D& returl);
 	bool isInBounds(FVector2D point);
+	FVector2D getPerpendicular();
 };
 
 
@@ -31,6 +32,9 @@ public:
 	bool
 	isInLight(AActor* actor);
 
+	UFUNCTION(BlueprintCallable)
+	bool
+	isPosInLight(const FVector2D& location);
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
