@@ -29,4 +29,7 @@ public:
 	class UBoxComponent* BoxColl;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = PlayerComponents)
 	class UStaticMeshComponent* Sprite;
+
+  UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	FVector BoxCollisionSize = FVector(50.0f, 50.0f, 50.0f);
 };

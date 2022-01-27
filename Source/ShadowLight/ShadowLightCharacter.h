@@ -52,4 +52,7 @@ public:
 	float HorizontalMovement = 0.0f;
 
 	float MovementSpeed = 1000.0f;
+
+  UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	FVector BoxCollisionSize = FVector(50.0f, 50.0f, 50.0f);
 };

@@ -38,10 +38,10 @@ void UMovement_C::TickComponent(float DeltaTime, ELevelTick TickType, FActorComp
 
   if (mov.Size() > 0.0f)
   {
-    float offset = 60;
-    float distance = 100;
+    FVector extents = BoxColl->GetCollisionShape().GetBox();
+
     TArray<FVector> directions;
-      if (mov.X != 0.0f)
+    if (mov.X != 0.0f)
     {
       directions.Add(FVector::ForwardVector * (abs(mov.X) / mov.X));
     }
@@ -51,10 +51,20 @@ void UMovement_C::TickComponent(float DeltaTime, ELevelTick TickType, FActorComp
     }
     for (int i = 0; i < directions.Num(); ++i)
     {
+      float MinDistance = 9999.9f;
+
+      FVector absDir = directions[i].GetAbs();
+      FVector absDirR = FVector(absDir.Y, -absDir.X, 0.0f);
+
+      float offset = (extents * absDir).Size();
+      float offsetR = (extents * absDirR).Size();
+      float distance = 100;
+
       FVector Start;
       if (BoxColl)
       {
-        Start = BoxColl->GetComponentLocation() + directions[i] * offset;
+        BoxColl->GetCollisionShape().GetBox();
+        Start = BoxColl->GetComponentLocation() + directions[i] * offset + absDirR * offsetR;
       }
       else
       {
@@ -66,12 +76,9 @@ void UMovement_C::TickComponent(float DeltaTime, ELevelTick TickType, FActorComp
       FHitResult Hit;
       bool hitted = GetWorld()->LineTraceSingleByChannel(Hit, Start, End, ECollisionChannel::ECC_WorldStatic, TraceParams);
 
-      if (DebugData)
+      if (hitted)
       {
-        GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Blue, directions[i].ToString());
-        GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Red, Start.ToString());
-        GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Yellow, End.ToString());
-        GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Green, hitted ? "Hitted" : "Meh");
+        MinDistance = Hit.Distance;
       }
 
       if (DebugLine)
@@ -81,15 +88,55 @@ void UMovement_C::TickComponent(float DeltaTime, ELevelTick TickType, FActorComp
           Start,
           End,
           FColor(255, 0, 0),
-          false, 20.0f, 0,
+          false, 2.0f, 0,
           1.0f
         );
       }
 
-      FVector directionalMovement = directions[i].GetAbs() * mov;
-      if (hitted && Hit.Distance < directionalMovement.Size())
+
+      absDirR = -absDirR;
+
+      if (BoxColl)
       {
-        GetOwner()->SetActorLocation(GetOwner()->GetActorLocation() + directions[i] * Hit.Distance);
+        BoxColl->GetCollisionShape().GetBox();
+        Start = BoxColl->GetComponentLocation() + directions[i] * offset + absDirR * offsetR;
+      }
+      else
+      {
+        Start = GetOwner()->GetActorLocation() + directions[i] * offset;
+      }
+      End = Start + directions[i] * distance;
+
+      bool hitted2 = GetWorld()->LineTraceSingleByChannel(Hit, Start, End, ECollisionChannel::ECC_WorldStatic, TraceParams);
+
+      if (hitted2 && Hit.Distance < MinDistance)
+      {
+        MinDistance = Hit.Distance;
+      }
+
+      if (DebugLine)
+      {
+        DrawDebugLine(
+          GetWorld(),
+          Start,
+          End,
+          FColor(255, 0, 0),
+          false, 2.0f, 0,
+          1.0f
+        );
+      }
+
+
+
+      if (DebugData)
+      {
+        GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Green, hitted || hitted2 ? "Hitted" : "Meh");
+      }
+
+      FVector directionalMovement = directions[i].GetAbs() * mov;
+      if ((hitted || hitted2) && MinDistance < directionalMovement.Size())
+      {
+        //GetOwner()->SetActorLocation(GetOwner()->GetActorLocation() + directions[i] * (MinDistance - 10.0f));
       }
       else
       {
