@@ -22,5 +22,11 @@ protected:
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
-
+	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = PlayerComponents)
+	class USceneComponent* SceneCmp;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = PlayerComponents)
+	class UBoxComponent* BoxColl;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = PlayerComponents)
+	class UStaticMeshComponent* Sprite;
 };
