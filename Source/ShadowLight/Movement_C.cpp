@@ -36,12 +36,12 @@ void UMovement_C::TickComponent(float DeltaTime, ELevelTick TickType, FActorComp
   FVector mov(Movement.X, Movement.Y, 0.0f);
   mov = mov.GetClampedToSize(0.0f, 1.0f) * MovementSpeed * DeltaTime;
 
-  if (mov != FVector(0.0f, 0.0f, 0.0f))
+  if (mov.Size() > 0.0f)
   {
-    float offset = 100;
-    float distance = 500;
+    float offset = 60;
+    float distance = 100;
     TArray<FVector> directions;
-    if (mov.X != 0.0f)
+      if (mov.X != 0.0f)
     {
       directions.Add(FVector::ForwardVector * (abs(mov.X) / mov.X));
     }
@@ -81,26 +81,21 @@ void UMovement_C::TickComponent(float DeltaTime, ELevelTick TickType, FActorComp
           Start,
           End,
           FColor(255, 0, 0),
-          false, 100.0f, 0,
-          10.0f
+          false, 20.0f, 0,
+          1.0f
         );
       }
+
+      FVector directionalMovement = directions[i].GetAbs() * mov;
+      if (hitted && Hit.Distance < directionalMovement.Size())
+      {
+        GetOwner()->SetActorLocation(GetOwner()->GetActorLocation() + directions[i] * Hit.Distance);
+      }
+      else
+      {
+        GetOwner()->SetActorLocation(GetOwner()->GetActorLocation() + directionalMovement);
+      }
     }
-  }
-
-  if (mov.Size() > 0.0f)
-  {
-    GetOwner()->SetActorLocation(GetOwner()->GetActorLocation() + mov);
-
-    //if (hit.bBlockingHit)
-    //{
-    //  FVector norm(hit.Normal.X, hit.Normal.Y, 0.0f);
-    //
-    //  norm.Normalize();
-    //
-    //  mov = FVector::VectorPlaneProject(mov, norm) * (1.0f - hit.Time);
-    //  GetOwner()->SetActorLocation(GetOwner()->GetActorLocation() + mov);
-    //}
   }
 }
 

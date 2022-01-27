@@ -51,7 +51,10 @@ void AShadowLightCharacter::Tick(float DeltaTime)
 	FVector2D mov(VerticalMovement, HorizontalMovement);
 	MovementComp->Move(mov);
 
-  
+
+
+  FVector loc = GetActorLocation();
+  SetActorLocation(FVector(loc.X, loc.Y, loc.X * 0.01f + 150.0f));
 }
 
 // Called to bind functionality to input
