@@ -17,7 +17,7 @@ ASceneObject::ASceneObject()
   BoxColl->SetupAttachment(SceneCmp);
   BoxColl->SetVisibility(true);
   BoxColl->SetHiddenInGame(false);
-  BoxColl->InitBoxExtent(FVector(50.0f, 50.0f, 50.0f));
+  BoxColl->InitBoxExtent(BoxCollisionSize);
   BoxColl->SetRelativeLocation(FVector(0.0f, 0.0f, 10.0f));
   Sprite = CreateDefaultSubobject<UStaticMeshComponent>("Sprite");
   Sprite->SetupAttachment(SceneCmp);
@@ -27,7 +27,8 @@ ASceneObject::ASceneObject()
 void ASceneObject::BeginPlay()
 {
 	Super::BeginPlay();
-	
+
+  BoxColl->InitBoxExtent(BoxCollisionSize);
 }
 
 // Called every frame
