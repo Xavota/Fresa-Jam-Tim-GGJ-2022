@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "Components/ActorComponent.h"
+#include "Reaction.h"
 #include "Steering.generated.h"
 
 
@@ -37,10 +38,7 @@ public:
 	float maxAceleration = 100;
 
 	UPROPERTY(EditAnywhere,BlueprintReadWrite)
-	float aceptanceRadius = 50;
-
-	UPROPERTY(EditAnywhere,BlueprintReadWrite)
-	float arrivingRadius = 100;
+	float aceptanceRadius = 100;
 
 	FVector2D velocity;
 
@@ -53,4 +51,11 @@ public:
 	FVector2D forward;
 	
 	FVector2D externalForze;
+
+	UPROPERTY(EditAnywhere,BlueprintReadWrite)
+	UReaction* arriveResponse;
+
+	FVector2D desiredVelocity;
+
+	FVector2D distance;
 };

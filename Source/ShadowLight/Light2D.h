@@ -51,6 +51,8 @@ public:
 	std::vector<FVector2D> points;
 	std::vector<Line> lines;
 	Line actualLine;
+
+	UPROPERTY(BlueprintReadWrite)
 	FVector2D location;
 	FVector2D dist;
 	int o;

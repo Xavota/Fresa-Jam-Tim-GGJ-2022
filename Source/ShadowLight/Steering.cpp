@@ -44,15 +44,14 @@ USteering::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTi
 
 	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString::Printf(TEXT("%f %f"),pointToGo.X,pointToGo.Y));
 
-	FVector2D distance = pointToGo-location;
+	distance = pointToGo-location;
 
-	FVector2D desiredVelocity = distance.GetSafeNormal()*maxVelocity;
+	desiredVelocity = distance.GetSafeNormal()*maxVelocity;
 
 	if(distance.Size()<aceptanceRadius){
-		desiredVelocity *=0;
-	}
-	else if(distance.Size()<arrivingRadius){
-		desiredVelocity *= (distance.Size()-aceptanceRadius)/(arrivingRadius-aceptanceRadius);
+		//desiredVelocity *=0;
+		if(arriveResponse)
+		arriveResponse->react();
 	}
 
 
