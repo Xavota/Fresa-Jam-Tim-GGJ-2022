@@ -40,64 +40,59 @@ void UMovement_C::TickComponent(float DeltaTime, ELevelTick TickType, FActorComp
   {
     if (!IsPushing)
     {
+      float MinDistance = 9999.9f;
+      AActor* CloserActor = nullptr;
+
+
+
       FVector extents = BoxColl->GetCollisionShape().GetBox();
 
-      //TArray<FVector> directions = { FVector::ForwardVector, FVector::BackwardVector, FVector::RightVector, FVector::LeftVector };
-      TArray<FVector> directions = { Orientation };
-      for (int i = 0; i < directions.Num(); ++i)
+      FVector absDir = Orientation.GetAbs();
+      FVector absDirR = FVector(absDir.Y, -absDir.X, 0.0f);
+
+      float offset = (extents * absDir).Size();
+      float offsetR = (extents * absDirR).Size();
+      float distance = 20.0f;
+
+      FCollisionQueryParams TraceParams;
+      FHitResult Hit;
+
+
+
+      FVector Start = BoxColl->GetComponentLocation() + Orientation * offset + absDirR * offsetR;
+      FVector End = Start + Orientation * distance;
+      bool hitted = GetWorld()->LineTraceSingleByChannel(Hit, Start, End, ECollisionChannel::ECC_WorldStatic, TraceParams);
+
+      if (hitted)
       {
-        float MinDistance = 9999.9f;
-        AActor* CloserActor = nullptr;
+        MinDistance = Hit.Distance;
+        CloserActor = Hit.GetActor();
+      }
 
 
 
-        FVector absDir = directions[i].GetAbs();
-        FVector absDirR = FVector(absDir.Y, -absDir.X, 0.0f);
+      absDirR = -absDirR;
 
-        float offset = (extents * absDir).Size();
-        float offsetR = (extents * absDirR).Size();
-        float distance = 20.0f;
+      Start = BoxColl->GetComponentLocation() + Orientation * offset + absDirR * offsetR;
+      End = Start + Orientation * distance;
+      bool hitted2 = GetWorld()->LineTraceSingleByChannel(Hit, Start, End, ECollisionChannel::ECC_WorldStatic, TraceParams);
 
-        FCollisionQueryParams TraceParams;
-        FHitResult Hit;
+      if (hitted2 && Hit.Distance < MinDistance)
+      {
+        MinDistance = Hit.Distance;
+        CloserActor = Hit.GetActor();
+      }
 
 
 
-        FVector Start = BoxColl->GetComponentLocation() + directions[i] * offset + absDirR * offsetR;
-        FVector End = Start + directions[i] * distance;
-        bool hitted = GetWorld()->LineTraceSingleByChannel(Hit, Start, End, ECollisionChannel::ECC_WorldStatic, TraceParams);
-
-        if (hitted)
+      if (hitted || hitted2)
+      {
+        TArray<UActorComponent*> PushCs = CloserActor->GetComponentsByClass(UPushObject_C::StaticClass());
+        if (PushCs.Num() != 0)
         {
-          MinDistance = Hit.Distance;
-          CloserActor = Hit.GetActor();
-        }
-
-
-
-        absDirR = -absDirR;
-
-        Start = BoxColl->GetComponentLocation() + directions[i] * offset + absDirR * offsetR;
-        End = Start + directions[i] * distance;
-        bool hitted2 = GetWorld()->LineTraceSingleByChannel(Hit, Start, End, ECollisionChannel::ECC_WorldStatic, TraceParams);
-
-        if (hitted2 && Hit.Distance < MinDistance)
-        {
-          MinDistance = Hit.Distance;
-          CloserActor = Hit.GetActor();
-        }
-
-
-
-        if (hitted || hitted2)
-        {
-          TArray<UActorComponent*> PushCs = CloserActor->GetComponentsByClass(UPushObject_C::StaticClass());
-          if (PushCs.Num() != 0)
-          {
-            IsPushing = true;
-            PushingActor = CloserActor;
-            PushingDirection = directions[i];
-          }
+          IsPushing = true;
+          PushingActor = CloserActor;
+          PushingDirection = Orientation;
         }
       }
     }
@@ -191,25 +186,13 @@ void UMovement_C::TickComponent(float DeltaTime, ELevelTick TickType, FActorComp
 
     TArray<UBoxComponent*> PushCollisions;
 
-    if (posibleMovement.Size() > 0.0f)
+    TArray<UActorComponent*> PushColls = PushingActor->GetComponentsByClass(UBoxComponent::StaticClass());
+    if (PushColls.Num() > 0)
     {
-      TArray<UActorComponent*> PushColls = PushingActor->GetComponentsByClass(UBoxComponent::StaticClass());
-
-      if (PushColls.Num() > 0)
-      {
-        PushCollisions.Add(Cast<UBoxComponent>(PushColls[0]));
-      }
+      PushCollisions.Add(Cast<UBoxComponent>(PushColls[0]));
     }
-    else
-    {
-      TArray<UActorComponent*> PushColls = PushingActor->GetComponentsByClass(UBoxComponent::StaticClass());
 
-      if (PushColls.Num() > 0)
-      {
-        PushCollisions.Add(Cast<UBoxComponent>(PushColls[0]));
-      }
-      PushCollisions.Add(BoxColl);
-    }
+    PushCollisions.Add(BoxColl);
 
 
 
@@ -243,7 +226,7 @@ void UMovement_C::TickComponent(float DeltaTime, ELevelTick TickType, FActorComp
         FVector End = Start + (absDir * mov).GetSafeNormal() * distance;
         bool tempHitted = GetWorld()->LineTraceSingleByChannel(Hit, Start, End, ECollisionChannel::ECC_WorldStatic, TraceParams);
 
-        if (tempHitted && Hit.Distance < MinDistance)
+        if (tempHitted && Hit.Distance < MinDistance && Hit.GetActor() != PushingActor)
         {
           MinDistance = Hit.Distance;
           CloserActor = Hit.GetActor();
@@ -270,7 +253,7 @@ void UMovement_C::TickComponent(float DeltaTime, ELevelTick TickType, FActorComp
         End = Start + (absDir * mov).GetSafeNormal() * distance;
         tempHitted = GetWorld()->LineTraceSingleByChannel(Hit, Start, End, ECollisionChannel::ECC_WorldStatic, TraceParams);
 
-        if (tempHitted && Hit.Distance < MinDistance)
+        if (tempHitted && Hit.Distance < MinDistance && Hit.GetActor() != PushingActor)
         {
           MinDistance = Hit.Distance;
           CloserActor = Hit.GetActor();
