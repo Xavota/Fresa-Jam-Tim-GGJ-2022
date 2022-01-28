@@ -81,7 +81,8 @@ public:
 	UPROPERTY(BlueprintReadWrite)
 	TArray<FCanvasUVTri> tris;
 
-	//TSubActorOfClass<
+	UPROPERTY(EditAnywhere)
+	TSubclassOf<AActor> lightBlockers;
 
 	UPROPERTY(EditAnywhere,BlueprintReadOnly)
 	float intensity;

@@ -155,7 +155,7 @@ void ALight2D::calculateLight()
 	temp.clear();
 	auto world = GetWorld();
 	TArray<AActor*> found;
-	UGameplayStatics::GetAllActorsOfClass(world,ALightBlocker::StaticClass(),found);
+	UGameplayStatics::GetAllActorsOfClass(world,lightBlockers,found);
 
 	locationWorld = FVector2D(GetActorLocation().X,GetActorLocation().Y);
 
@@ -164,9 +164,8 @@ void ALight2D::calculateLight()
 	float foundNum =found.Num();
 
 	for(i=0;i<foundNum;++i){
-		auto blocker = Cast<ALightBlocker>(found[i]);
-		auto box = FVector2D(blocker->GetActorScale().X,blocker->GetActorScale().Y);
-		auto center = blocker->GetActorLocation();
+		auto box = FVector2D(found[i]->GetActorScale().X,found[i]->GetActorScale().Y);
+		auto center = found[i]->GetActorLocation();
 
 		//GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString::Printf(TEXT("Some variable values: x: %f, y: %f"),center.X , center.Y));
 
