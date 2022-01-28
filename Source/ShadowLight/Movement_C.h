@@ -35,6 +35,7 @@ public:
 
 
   FVector2D Movement;
+  FVector Orientation;
   class UBoxComponent* BoxColl;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = MovementData)
