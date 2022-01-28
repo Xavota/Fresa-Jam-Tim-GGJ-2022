@@ -56,7 +56,11 @@ public:
 	Line actualLine;
 
 	UPROPERTY(BlueprintReadWrite)
-	FVector2D location;
+	FVector2D locationWorld;
+
+	UPROPERTY(BlueprintReadWrite)
+	FVector2D locationShader;
+
 	FVector2D dist;
 	int o;
 	int i;
@@ -77,12 +81,19 @@ public:
 	UPROPERTY(BlueprintReadWrite)
 	TArray<FCanvasUVTri> tris;
 
+	//TSubActorOfClass<
+
 	UPROPERTY(EditAnywhere,BlueprintReadOnly)
 	float intensity;
 
 	UPROPERTY(EditAnywhere,BlueprintReadOnly)
 	float difumination = .75;
 
+	//UPROPERTY(EditAnywhere,BlueprintReadOnly)
+	float lightArea = 2048;
+
 	UPROPERTY(EditAnywhere,BlueprintReadOnly)
-	float lightArea = 1800;
+	float resolution = 1;
+
+
 };
