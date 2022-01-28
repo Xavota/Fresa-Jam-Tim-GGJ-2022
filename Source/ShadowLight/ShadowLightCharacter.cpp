@@ -63,6 +63,9 @@ void AShadowLightCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInp
 
 	PlayerInputComponent->BindAxis("MoveForward", this, &AShadowLightCharacter::MoveVertical);
 	PlayerInputComponent->BindAxis("MoveRight", this, &AShadowLightCharacter::MoveHorizontal);
+
+  PlayerInputComponent->BindAction("Push", IE_Pressed, this, &AShadowLightCharacter::PressPush);
+  PlayerInputComponent->BindAction("Push", IE_Released, this, &AShadowLightCharacter::ReleasePush);
 }
 
 void AShadowLightCharacter::MoveVertical(float value)
@@ -73,5 +76,21 @@ void AShadowLightCharacter::MoveVertical(float value)
 void AShadowLightCharacter::MoveHorizontal(float value)
 {
   HorizontalMovement = value;
+}
+
+void AShadowLightCharacter::PressPush()
+{
+	if (MovementComp)
+	{
+		MovementComp->SetPushing(true);
+	}
+}
+
+void AShadowLightCharacter::ReleasePush()
+{
+  if (MovementComp)
+  {
+    MovementComp->SetPushing(false);
+  }
 }
 
