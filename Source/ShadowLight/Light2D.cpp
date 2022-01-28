@@ -31,12 +31,21 @@ ALight2D::isInLight(AActor* actor)
 
 bool ALight2D::isPosInLight(const FVector2D& _location)
 {
+	
 	Line line;
 	line.setFromPoints(_location,location);
 	for(Line& lin : lines){
 		if(line.intersect(lin,result)){
 			return false;
 		}
+	}
+	return true;
+}
+
+bool ALight2D::isInRange(const FVector2D& _location)
+{
+	if((_location-location).Size()>intensity){
+		return false;
 	}
 	return true;
 }
@@ -144,10 +153,16 @@ void ALight2D::calculateLight()
 		worldPoints.push_back(center+FVector(box.X*1.5f,-box.Y*1.5f,0));
 		worldPoints.push_back(center+FVector(-box.X*1.5f,-box.Y*1.5f,0));
 
-		points.push_back(FVector2D(worldPoints[i*4+0].X, worldPoints[i*4+0].Y));
-		points.push_back(FVector2D(worldPoints[i*4+1].X, worldPoints[i*4+1].Y));
-		points.push_back(FVector2D(worldPoints[i*4+2].X, worldPoints[i*4+2].Y));
-		points.push_back(FVector2D(worldPoints[i*4+3].X, worldPoints[i*4+3].Y));
+
+		FVector2D point0 = FVector2D(worldPoints[i*4+0].X, worldPoints[i*4+0].Y);
+		FVector2D point1 = FVector2D(worldPoints[i*4+1].X, worldPoints[i*4+1].Y);
+		FVector2D point2 = FVector2D(worldPoints[i*4+2].X, worldPoints[i*4+2].Y);
+		FVector2D point3 = FVector2D(worldPoints[i*4+3].X, worldPoints[i*4+3].Y);
+		if(!isInRange(point0)&&!isInRange(point1)&&!isInRange(point2)&&!isInRange(point3)) return;
+		points.push_back(point0);
+		points.push_back(point1);
+		points.push_back(point2);
+		points.push_back(point3);
 
 		lines.push_back(Line());
 		lines.push_back(Line());

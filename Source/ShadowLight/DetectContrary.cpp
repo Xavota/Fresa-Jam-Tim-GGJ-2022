@@ -39,6 +39,12 @@ void UDetectContrary::TickComponent(float DeltaTime, ELevelTick TickType, FActor
 	auto otherLocation = steering->forward*distance+location;
 	for(AActor* actor:found){
 		auto light = Cast<ALight2D>(actor);
+		if(light->isInRange(otherLocation)!=pawn->isLight){
+			GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString::Printf(TEXT("going out")));
+
+			steering->addForze((light->location-location).GetSafeNormal()*fear);
+			continue;
+		}
 		if(light->isPosInLight(otherLocation)!=pawn->isLight){
 			//GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString::Printf(TEXT("detecting")));
 			//steering->maxVelocity = 0;

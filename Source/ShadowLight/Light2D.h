@@ -35,6 +35,8 @@ public:
 	UFUNCTION(BlueprintCallable)
 	bool
 	isPosInLight(const FVector2D& location);
+
+	bool isInRange(const FVector2D& location);
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
@@ -69,4 +71,7 @@ public:
 
 	UPROPERTY(BlueprintReadWrite)
 	TArray<FCanvasUVTri> tris;
+
+	UPROPERTY(BlueprintReadWrite)
+	float intensity = 900;
 };
