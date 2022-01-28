@@ -30,6 +30,11 @@ public:
 	void MoveVertical(float value);
 	UFUNCTION()
 	void MoveHorizontal(float value);
+
+	UFUNCTION()
+	void PressPush();
+	UFUNCTION()
+	void ReleasePush();
 	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = PlayerComponents)
 	class USceneComponent* SceneCmp;

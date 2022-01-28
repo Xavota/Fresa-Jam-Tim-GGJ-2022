@@ -29,6 +29,9 @@ public:
 
 	UFUNCTION(BlueprintCallable)
 	virtual void Move(FVector2D movement);
+	
+	UFUNCTION(BlueprintCallable)
+	virtual void SetPushing(bool push);
 
 
   FVector2D Movement;
@@ -36,10 +39,23 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = MovementData)
   float MovementSpeed = 1000.0f;
+	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = MovementData)
+	bool Pushing = false;
 
+	bool IsPushing = false;
+	AActor* PushingActor = nullptr;
+	FVector PushingDirection;
 
   UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Debug)
 	bool DebugLine = false;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Debug)
 	bool DebugData = false;
+
+  UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Debug)
+	float DebugLineTime = 2.0f;
+  UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Debug)
+	float DebugLineThickness = 1.0f;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Debug)
+	float DebugDataTime = 2.0f;
 };
