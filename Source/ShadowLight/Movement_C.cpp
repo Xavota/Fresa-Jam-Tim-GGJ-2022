@@ -5,6 +5,7 @@
 #include "DrawDebugHelpers.h"
 #include "Components/BoxComponent.h"
 #include "PushObject_C.h"
+#include "Collition_C.h"
 
 // Sets default values for this component's properties
 UMovement_C::UMovement_C()
@@ -24,6 +25,41 @@ void UMovement_C::BeginPlay()
 
 	// ...
 	
+}
+
+bool ChechLineTrace(UBoxComponent* BoxColl, FVector Orientation,
+                    FVector absDirR, float offset, float offsetR,
+                    float distance, float& MinDistance, AActor** CloserActor,
+                    UWorld* World,
+                    FHitResult& Hit, FCollisionQueryParams& TraceParams)
+{
+  FVector Start = BoxColl->GetComponentLocation() + Orientation * offset + absDirR * offsetR;
+  FVector End = Start + Orientation * distance;
+
+  TArray<UActorComponent*> Colls_C;
+  bool hitted = false;
+  do
+  {
+    hitted = World->LineTraceSingleByChannel(Hit, Start, End, ECollisionChannel::ECC_WorldStatic, TraceParams);
+    if (hitted)
+    {
+      Colls_C = Hit.GetActor()->GetComponentsByClass(UCollition_C::StaticClass());
+
+      if (Colls_C.Num() <= 0)
+      {
+        TraceParams.AddIgnoredActor(Hit.GetActor());
+      }
+    }
+  } while (hitted && Colls_C.Num() <= 0);
+
+  if (hitted && Hit.Distance < MinDistance)
+  {
+    MinDistance = Hit.Distance;
+    *CloserActor = Hit.GetActor();
+
+    return true;
+  }
+  return false;
 }
 
 // Called every frame
@@ -145,29 +181,11 @@ void UMovement_C::TickComponent(float DeltaTime, ELevelTick TickType, FActorComp
 
 
 
-        FVector Start = BoxColl->GetComponentLocation() + directions[i] * offset + absDirR * offsetR;
-        FVector End = Start + directions[i] * distance;
-        bool hitted = GetWorld()->LineTraceSingleByChannel(Hit, Start, End, ECollisionChannel::ECC_WorldStatic, TraceParams);
+        bool hitted = ChechLineTrace(BoxColl, directions[i], absDirR, offset, offsetR, distance, MinDistance, &CloserActor, GetWorld(), Hit, TraceParams);
     
-        if (hitted)
-        {
-          MinDistance = Hit.Distance;
-          CloserActor = Hit.GetActor();
-        }
-    
-    
-
         absDirR = -absDirR;
 
-        Start = BoxColl->GetComponentLocation() + directions[i] * offset + absDirR * offsetR;
-        End = Start + directions[i] * distance;
-        bool hitted2 = GetWorld()->LineTraceSingleByChannel(Hit, Start, End, ECollisionChannel::ECC_WorldStatic, TraceParams);
-    
-        if (hitted2 && Hit.Distance < MinDistance)
-        {
-          MinDistance = Hit.Distance;
-          CloserActor = Hit.GetActor();
-        }
+        bool hitted2 = ChechLineTrace(BoxColl, directions[i], absDirR, offset, offsetR, distance, MinDistance, &CloserActor, GetWorld(), Hit, TraceParams);
 
 
     
@@ -222,54 +240,47 @@ void UMovement_C::TickComponent(float DeltaTime, ELevelTick TickType, FActorComp
 
 
 
-        FVector Start = coll->GetComponentLocation() + (absDir * mov).GetSafeNormal() * offset + absDirR * offsetR;
-        FVector End = Start + (absDir * mov).GetSafeNormal() * distance;
-        bool tempHitted = GetWorld()->LineTraceSingleByChannel(Hit, Start, End, ECollisionChannel::ECC_WorldStatic, TraceParams);
+        //FVector Start = coll->GetComponentLocation() + (absDir * mov).GetSafeNormal() * offset + absDirR * offsetR;
+        //FVector End = Start + (absDir * mov).GetSafeNormal() * distance;
+        //bool tempHitted = GetWorld()->LineTraceSingleByChannel(Hit, Start, End, ECollisionChannel::ECC_WorldStatic, TraceParams);
+        //
+        //if (tempHitted && Hit.Distance < MinDistance && Hit.GetActor() != PushingActor)
+        //{
+        //  MinDistance = Hit.Distance;
+        //  CloserActor = Hit.GetActor();
+        //  hitted = true;
+        //}
 
-        if (tempHitted && Hit.Distance < MinDistance && Hit.GetActor() != PushingActor)
+        float TemDistance = 9999.9f;
+        AActor* TemActor = nullptr;
+        bool tempHitted = ChechLineTrace(coll, (absDir * mov).GetSafeNormal(), absDirR, offset, offsetR, distance, TemDistance, &TemActor, GetWorld(), Hit, TraceParams);
+        if (tempHitted && TemDistance < MinDistance && TemActor != PushingActor)
         {
-          MinDistance = Hit.Distance;
-          CloserActor = Hit.GetActor();
+          MinDistance = TemDistance;
+          CloserActor = TemActor;
           hitted = true;
-        }
-
-        if (DebugLine)
-        {
-          DrawDebugLine(
-            GetWorld(),
-            Start,
-            End,
-            FColor(255, 0, 0),
-            false, DebugLineTime, 0,
-            DebugLineThickness
-          );
         }
 
 
 
         absDirR = -absDirR;
 
-        Start = coll->GetComponentLocation() + (absDir * mov).GetSafeNormal() * offset + absDirR * offsetR;
-        End = Start + (absDir * mov).GetSafeNormal() * distance;
-        tempHitted = GetWorld()->LineTraceSingleByChannel(Hit, Start, End, ECollisionChannel::ECC_WorldStatic, TraceParams);
-
-        if (tempHitted && Hit.Distance < MinDistance && Hit.GetActor() != PushingActor)
+        //Start = coll->GetComponentLocation() + (absDir * mov).GetSafeNormal() * offset + absDirR * offsetR;
+        //End = Start + (absDir * mov).GetSafeNormal() * distance;
+        //tempHitted = GetWorld()->LineTraceSingleByChannel(Hit, Start, End, ECollisionChannel::ECC_WorldStatic, TraceParams);
+        //
+        //if (tempHitted && Hit.Distance < MinDistance && Hit.GetActor() != PushingActor)
+        //{
+        //  MinDistance = Hit.Distance;
+        //  CloserActor = Hit.GetActor();
+        //  hitted = true;
+        //}
+        tempHitted = ChechLineTrace(coll, (absDir * mov).GetSafeNormal(), absDirR, offset, offsetR, distance, TemDistance, &TemActor, GetWorld(), Hit, TraceParams);
+        if (tempHitted && TemDistance < MinDistance && TemActor != PushingActor)
         {
-          MinDistance = Hit.Distance;
-          CloserActor = Hit.GetActor();
+          MinDistance = TemDistance;
+          CloserActor = TemActor;
           hitted = true;
-        }
-
-        if (DebugLine)
-        {
-          DrawDebugLine(
-            GetWorld(),
-            Start,
-            End,
-            FColor(255, 0, 0),
-            false, DebugLineTime, 0,
-            DebugLineThickness
-          );
         }
       }
 
