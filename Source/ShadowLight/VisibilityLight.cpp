@@ -32,21 +32,26 @@ void UVisibilityLight::TickComponent(float DeltaTime, ELevelTick TickType, FActo
 
 	TArray<AActor*> found;
 	UGameplayStatics::GetAllActorsOfClass(GetWorld(),ALight2D::StaticClass(),found);
+	ALight2D* light = nullptr;
 	for(AActor* actor:found){
-		isInLight = Cast<ALight2D>(actor)->isInLight(GetOwner());
+	light = Cast<ALight2D>(actor);
+		isInLight = light->isInLight(GetOwner());;//&& Cast<ALight2D>(actor)->isInRange(FVector2D(GetOwner()->GetActorLocation().X,GetOwner()->GetActorLocation().Y));
 	}
 	if(isInLight){
-		visibility -= DeltaTime;
+
+		visibility = light->intensityAt(GetOwner());
+
+		/*visibility -= DeltaTime;
 		if(visibility<0){
 			visibility = 0;
-		}
+		}*/
 	}
-	else{
+	/*else{
 		visibility += DeltaTime;
 		if(visibility>1){
 			visibility = 1;
 		}
-	}
+	}*/
 	// ...
 }
 

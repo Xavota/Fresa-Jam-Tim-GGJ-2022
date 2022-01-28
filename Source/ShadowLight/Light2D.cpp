@@ -42,6 +42,22 @@ bool ALight2D::isPosInLight(const FVector2D& _location)
 	return true;
 }
 
+float ALight2D::intensityAt(AActor* actor)
+{
+	auto _location = FVector2D(actor->GetActorLocation().X,actor->GetActorLocation().Y);
+	float intensityAt = (_location-location).Size()/intensity;
+	if(intensityAt>1){
+		return 1;
+	}
+	else if(intensityAt<difumination){
+		return 0;
+	}
+	else{
+		return (intensityAt-difumination)/(1.f-difumination);
+	}
+	
+}
+
 bool ALight2D::isInRange(const FVector2D& _location)
 {
 	if((_location-location).Size()>intensity){

@@ -36,6 +36,9 @@ public:
 	bool
 	isPosInLight(const FVector2D& location);
 
+	float
+	intensityAt(AActor* actor);
+
 	bool isInRange(const FVector2D& location);
 protected:
 	// Called when the game starts or when spawned
@@ -64,7 +67,7 @@ public:
 	std::vector<FVector> worldPoints;
 	float actualAngle;
 	float angle1,angle2;
-	float lightArea = 1800;
+	
 	Line newLine1;
 	Line newLine2;
 	std::map<float,FVector2D> ordered;
@@ -74,6 +77,12 @@ public:
 	UPROPERTY(BlueprintReadWrite)
 	TArray<FCanvasUVTri> tris;
 
-	UPROPERTY(BlueprintReadWrite)
-	float intensity = 900;
+	UPROPERTY(EditAnywhere,BlueprintReadOnly)
+	float intensity;
+
+	UPROPERTY(EditAnywhere,BlueprintReadOnly)
+	float difumination = .75;
+
+	UPROPERTY(EditAnywhere,BlueprintReadOnly)
+	float lightArea = 1800;
 };
