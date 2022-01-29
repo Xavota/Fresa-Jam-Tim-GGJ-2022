@@ -35,4 +35,7 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	FVector2D area;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	bool blocksLight;
 };

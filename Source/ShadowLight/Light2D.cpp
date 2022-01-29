@@ -163,9 +163,13 @@ void ALight2D::calculateLight()
 	locationShader = locationWorld/resolution;
 
 	float foundNum =found.Num();
-
+	int actual = 0;
 	for(i=0;i<foundNum;++i){
-		auto box = Cast<ASceneObject>(found[i])->area;
+		auto object = Cast<ASceneObject>(found[i]);
+
+		if(!object->blocksLight) continue;
+		
+		auto box = object->area;
 		auto center = found[i]->GetActorLocation();
 
 		//GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString::Printf(TEXT("Some variable values: x: %f, y: %f"),center.X , center.Y));
@@ -177,10 +181,10 @@ void ALight2D::calculateLight()
 		worldPoints.push_back(center+FVector(-box.X*1.5f,-box.Y*1.5f,0));
 
 
-		FVector2D point0 = FVector2D(worldPoints[i*4+0].X, worldPoints[i*4+0].Y)/resolution;
-		FVector2D point1 = FVector2D(worldPoints[i*4+1].X, worldPoints[i*4+1].Y)/resolution;
-		FVector2D point2 = FVector2D(worldPoints[i*4+2].X, worldPoints[i*4+2].Y)/resolution;
-		FVector2D point3 = FVector2D(worldPoints[i*4+3].X, worldPoints[i*4+3].Y)/resolution;
+		FVector2D point0 = FVector2D(worldPoints[actual*4+0].X, worldPoints[actual*4+0].Y)/resolution;
+		FVector2D point1 = FVector2D(worldPoints[actual*4+1].X, worldPoints[actual*4+1].Y)/resolution;
+		FVector2D point2 = FVector2D(worldPoints[actual*4+2].X, worldPoints[actual*4+2].Y)/resolution;
+		FVector2D point3 = FVector2D(worldPoints[actual*4+3].X, worldPoints[actual*4+3].Y)/resolution;
 		//if(!isInRange(point0)&&!isInRange(point1)&&!isInRange(point2)&&!isInRange(point3)) return;
 		points.push_back(point0);
 		points.push_back(point1);
@@ -192,10 +196,11 @@ void ALight2D::calculateLight()
 		lines.push_back(Line());
 		lines.push_back(Line());
 
-		lines[i*4+0].setFromPoints(points[i*4+0],points[i*4+1]);
-		lines[i*4+1].setFromPoints(points[i*4+1],points[i*4+3]);
-		lines[i*4+2].setFromPoints(points[i*4+3],points[i*4+2]);
-		lines[i*4+3].setFromPoints(points[i*4+2],points[i*4+0]);
+		lines[actual*4+0].setFromPoints(points[actual*4+0],points[actual*4+1]);
+		lines[actual*4+1].setFromPoints(points[actual*4+1],points[actual*4+3]);
+		lines[actual*4+2].setFromPoints(points[actual*4+3],points[actual*4+2]);
+		lines[actual*4+3].setFromPoints(points[actual*4+2],points[actual*4+0]);
+		++actual;
 	}
 
 
@@ -209,10 +214,10 @@ void ALight2D::calculateLight()
 	lines.push_back(Line());
 	lines.push_back(Line());
 	
-	lines[i*4+0].setFromPoints(points[i*4+0],points[i*4+1]);
-	lines[i*4+1].setFromPoints(points[i*4+1],points[i*4+3]);
-	lines[i*4+2].setFromPoints(points[i*4+3],points[i*4+2]);
-	lines[i*4+3].setFromPoints(points[i*4+2],points[i*4+0]);
+	lines[actual*4+0].setFromPoints(points[actual*4+0],points[actual*4+1]);
+	lines[actual*4+1].setFromPoints(points[actual*4+1],points[actual*4+3]);
+	lines[actual*4+2].setFromPoints(points[actual*4+3],points[actual*4+2]);
+	lines[actual*4+3].setFromPoints(points[actual*4+2],points[actual*4+0]);
 	
 	
 	bool colided;
@@ -223,11 +228,11 @@ void ALight2D::calculateLight()
 	FVector2D actualResult2;
 	float actualAngle2;
 	//bool colided2;
-	for(i=0;i<foundNum*4+4;++i){
+	for(i=0;i<actual*4+4;++i){
 		actualLine.setFromPoints(locationShader,points[i]);
 		colided = false;
 		minSize = FLT_MAX;
-		for(o=0;o<foundNum*4;++o){
+		for(o=0;o<actual*4;++o){
 			
 			if(points[i]!=lines[o].start && points[i]!=lines[o].end){
 				if(actualLine.intersect(lines[o],result) ){
