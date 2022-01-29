@@ -41,7 +41,7 @@ public:
 	//TSubclassOf<AActor> SwitchActorType = nullptr;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	bool CanDeactivate = false;
+	bool CanDeactivate = true;
 
 	bool IsActive = false;
 

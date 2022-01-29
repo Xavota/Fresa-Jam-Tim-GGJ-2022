@@ -24,6 +24,9 @@ public:
 	// Called every frame
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
+  UFUNCTION(BlueprintCallable)
+  virtual void SetCanPass(bool can);
+
   UPROPERTY(EditAnywhere, BlueprintReadWrite)
   FName LoadSceneUp;
   UPROPERTY(EditAnywhere, BlueprintReadWrite)
@@ -35,6 +38,11 @@ public:
   
   UPROPERTY(EditAnywhere, BlueprintReadWrite)
   FName UnloadSceneName;
+  
+  UPROPERTY(EditAnywhere, BlueprintReadWrite)
+  FVector PositionAfterPass;
+  UPROPERTY(EditAnywhere, BlueprintReadWrite)
+  bool CanPass = true;
 
   TArray<FName> LoadSceneNames;
 
