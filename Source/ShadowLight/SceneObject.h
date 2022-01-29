@@ -32,4 +32,7 @@ public:
 
   UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	FVector BoxCollisionSize = FVector(50.0f, 50.0f, 50.0f);
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	FVector2D area;
 };

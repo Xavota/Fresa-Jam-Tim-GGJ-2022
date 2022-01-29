@@ -5,6 +5,7 @@
 #include "DrawDebugHelpers.h"
 #include "Kismet/GameplayStatics.h"
 #include "LightBlocker.h"
+#include "SceneObject.h"
 #include "Components/BoxComponent.h"
 
 
@@ -155,7 +156,7 @@ void ALight2D::calculateLight()
 	temp.clear();
 	auto world = GetWorld();
 	TArray<AActor*> found;
-	UGameplayStatics::GetAllActorsOfClass(world,lightBlockers,found);
+	UGameplayStatics::GetAllActorsOfClass(world,ASceneObject::StaticClass(),found);
 
 	locationWorld = FVector2D(GetActorLocation().X,GetActorLocation().Y);
 
@@ -164,7 +165,7 @@ void ALight2D::calculateLight()
 	float foundNum =found.Num();
 
 	for(i=0;i<foundNum;++i){
-		auto box = FVector2D(found[i]->GetActorScale().X,found[i]->GetActorScale().Y);
+		auto box = Cast<ASceneObject>(found[i])->area;
 		auto center = found[i]->GetActorLocation();
 
 		//GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString::Printf(TEXT("Some variable values: x: %f, y: %f"),center.X , center.Y));

@@ -28,7 +28,7 @@ void ACreature::Tick(float DeltaTime)
 	for(AActor* actor:found){
 		if(Cast<ALight2D>(actor)->isInLight(this)!=isLight){
 			//GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString::Printf(TEXT("ded")));
-
+			die();
 		}
 		
 	}
@@ -41,3 +41,6 @@ void ACreature::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 
 }
 
+void ACreature::die(){
+	this->Destroy();
+}
