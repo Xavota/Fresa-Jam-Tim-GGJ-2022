@@ -127,7 +127,8 @@ void UDoor_C::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponen
           //UGameplayStatics::UnloadStreamLevel(this, UnloadSceneName, FLatentActionInfo(), false);
           UnloadLevel = true;
 
-          Character->SetActorLocation(Character->GetActorLocation() - Directions[i] * 250.0f);
+          //Character->SetActorLocation(Character->GetActorLocation() - Directions[i] * 250.0f);
+          Character->SetActorLocation(PositionAfterPass);
         }
       }
     }
