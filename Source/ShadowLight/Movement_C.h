@@ -32,6 +32,9 @@ public:
 	
 	UFUNCTION(BlueprintCallable)
 	virtual void SetPushing(bool push);
+	
+	UFUNCTION(BlueprintCallable)
+	virtual FVector GetOrientation();
 
 
   FVector2D Movement;
@@ -47,16 +50,4 @@ public:
 	bool IsPushing = false;
 	AActor* PushingActor = nullptr;
 	FVector PushingDirection;
-
-  UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Debug)
-	bool DebugLine = false;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Debug)
-	bool DebugData = false;
-
-  UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Debug)
-	float DebugLineTime = 2.0f;
-  UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Debug)
-	float DebugLineThickness = 1.0f;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Debug)
-	float DebugDataTime = 2.0f;
 };

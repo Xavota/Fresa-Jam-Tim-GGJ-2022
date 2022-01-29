@@ -4,18 +4,17 @@
 
 #include "CoreMinimal.h"
 #include "Components/ActorComponent.h"
-#include "Switch_C.generated.h"
+#include "PreasurePlate_C.generated.h"
 
-using foo = void (*)(bool);
 
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
-class SHADOWLIGHT_API USwitch_C : public UActorComponent
+class SHADOWLIGHT_API UPreasurePlate_C : public UActorComponent
 {
 	GENERATED_BODY()
 
 public:	
 	// Sets default values for this component's properties
-	USwitch_C();
+	UPreasurePlate_C();
 
 protected:
 	// Called when the game starts
@@ -45,4 +44,6 @@ public:
 	bool CanDeactivate = false;
 
 	bool IsActive = false;
+
+		
 };

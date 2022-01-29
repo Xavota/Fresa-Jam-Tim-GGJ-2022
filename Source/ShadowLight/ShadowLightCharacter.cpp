@@ -8,6 +8,8 @@
 #include "Camera/CameraComponent.h"
 #include "Movement_C.h"
 #include "Animation_C.h"
+#include "Collition_C.h"
+#include "Switch_C.h"
 
 // Sets default values
 AShadowLightCharacter::AShadowLightCharacter()
@@ -44,6 +46,42 @@ void AShadowLightCharacter::BeginPlay()
 	AnimationCmp->InitComponent(Sprite);
 }
 
+bool ChechLineTraceCh(UBoxComponent* BoxColl, FVector Orientation,
+                      FVector absDirR, float offset, float offsetR,
+                      float distance, float& MinDistance, AActor** CloserActor,
+                      UWorld* World,
+                      FHitResult& Hit, FCollisionQueryParams& TraceParams)
+{
+  FVector Start = BoxColl->GetComponentLocation() + Orientation * offset + absDirR * offsetR;
+  FVector End = Start + Orientation * distance;
+
+  TArray<UActorComponent*> Colls_C;
+  bool hitted = false;
+  do
+  {
+    hitted = World->LineTraceSingleByChannel(Hit, Start, End, ECollisionChannel::ECC_WorldStatic, TraceParams);
+    if (hitted)
+    {
+      Colls_C = Hit.GetActor()->GetComponentsByClass(UCollition_C::StaticClass());
+
+      if (Colls_C.Num() <= 0)
+      {
+        TraceParams.AddIgnoredActor(Hit.GetActor());
+      }
+    }
+  } while (hitted && Colls_C.Num() <= 0);
+
+  if (hitted && Hit.Distance < MinDistance)
+  {
+    MinDistance = Hit.Distance;
+    *CloserActor = Hit.GetActor();
+
+    return true;
+  }
+  return false;
+}
+
+
 // Called every frame
 void AShadowLightCharacter::Tick(float DeltaTime)
 {
@@ -54,6 +92,51 @@ void AShadowLightCharacter::Tick(float DeltaTime)
 
   FVector loc = GetActorLocation();
   SetActorLocation(FVector(loc.X, loc.Y, -loc.X * 0.1f + 150.0f));
+
+
+  if (Interact)
+  {
+    Interact = false;
+
+    float MinDistance = 9999.9f;
+    AActor* CloserActor = nullptr;
+
+
+
+    FVector Orientation = MovementComp->GetOrientation();
+
+    FVector extents = BoxColl->GetCollisionShape().GetBox();
+
+    FVector absDir = Orientation.GetAbs();
+    FVector absDirR = FVector(absDir.Y, -absDir.X, 0.0f);
+
+    float offset = (extents * absDir).Size();
+    float offsetR = (extents * absDirR).Size();
+    float distance = 20.0f;
+
+    FCollisionQueryParams TraceParams;
+    FHitResult Hit;
+
+
+
+    bool hitted = ChechLineTraceCh(BoxColl, Orientation, absDirR, offset, offsetR, distance, MinDistance, &CloserActor, GetWorld(), Hit, TraceParams);
+
+    absDirR = -absDirR;
+
+    bool hitted2 = ChechLineTraceCh(BoxColl, Orientation, absDirR, offset, offsetR, distance, MinDistance, &CloserActor, GetWorld(), Hit, TraceParams);
+
+
+
+    if (hitted || hitted2)
+    {
+      TArray<UActorComponent*> Switch_C = CloserActor->GetComponentsByClass(USwitch_C::StaticClass());
+      if (Switch_C.Num() != 0)
+      {
+        USwitch_C* switchObj = Cast<USwitch_C>(Switch_C[0]);
+        switchObj->ToggleSwitchActive();
+      }
+    }
+  }
 }
 
 // Called to bind functionality to input
@@ -66,6 +149,8 @@ void AShadowLightCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInp
 
   PlayerInputComponent->BindAction("Push", IE_Pressed, this, &AShadowLightCharacter::PressPush);
   PlayerInputComponent->BindAction("Push", IE_Released, this, &AShadowLightCharacter::ReleasePush);
+  PlayerInputComponent->BindAction("Interact", IE_Pressed, this, &AShadowLightCharacter::PressInteract);
+  PlayerInputComponent->BindAction("Interact", IE_Released, this, &AShadowLightCharacter::ReleaseInteract);
 }
 
 void AShadowLightCharacter::MoveVertical(float value)
@@ -92,5 +177,14 @@ void AShadowLightCharacter::ReleasePush()
   {
     MovementComp->SetPushing(false);
   }
+}
+
+void AShadowLightCharacter::PressInteract()
+{
+  Interact = true;
+}
+
+void AShadowLightCharacter::ReleaseInteract()
+{
 }
 

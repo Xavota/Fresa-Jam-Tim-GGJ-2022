@@ -32,27 +32,50 @@ void USwitch_C::TickComponent(float DeltaTime, ELevelTick TickType, FActorCompon
 	// ...
 }
 
-void USwitch_C::InitComponent(foo function, bool canDeactivate)
+//void USwitch_C::InitComponent(AActor* actorToActivate, TSubclassOf<AActor> classType, bool canDeactivate)
+//{
+//	SwitchActor = actorToActivate;
+//	SwitchActorType = classType;
+//	CanDeactivate = canDeactivate;
+//}
+void USwitch_C::InitComponent(bool canDeactivate)
 {
-  SwitchFunction = function;
 	CanDeactivate = canDeactivate;
 }
 
-//void USwitch_C::SetActive(bool active)
-//{
-//	if (SwitchFunction)
-//	{
-//		if (active)
-//		{
-//			SwitchFunction(true);
-//		}
-//		else
-//    {
-//		  if (CanDeactivate)	
-//      {
-//        SwitchFunction(false);
-//			}
-//		}
-//	}
-//}
+void USwitch_C::ToggleSwitchActive()
+{
+	if (!IsActive)
+	{
+		IsActive = true;
+	}
+	else
+  {
+    if (CanDeactivate)
+    {
+      IsActive = false;
+    }
+	}
+
+	//if (SwitchActor)
+	//{
+	//  Cast<SwitchActorType>(SwitchActor);
+	//	SwitchFunction(IsActive);
+	//}
+}
+
+void USwitch_C::SetSwitchActive(bool active)
+{
+  IsActive = active;
+
+  //if (SwitchFunction)
+  //{
+  //  SwitchFunction(IsActive);
+  //}
+}
+
+bool USwitch_C::GetActive()
+{
+	return IsActive;
+}
 
