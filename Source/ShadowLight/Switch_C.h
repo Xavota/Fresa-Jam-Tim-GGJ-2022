@@ -26,13 +26,23 @@ public:
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
 	//UFUNCTION(BlueprintCallable)
-	void InitComponent(foo function, bool canDeactivate);
-	//UFUNCTION(BlueprintCallable)
-	//void SetActive(bool active);
+  //void InitComponent(AActor* actorToActivate, TSubclassOf<AActor> classType, bool canDeactivate);
+  UFUNCTION(BlueprintCallable)
+  void InitComponent(bool canDeactivate);
+	UFUNCTION(BlueprintCallable)
+	void ToggleSwitchActive();
+	UFUNCTION(BlueprintCallable)
+	void SetSwitchActive(bool active);
+	UFUNCTION(BlueprintCallable)
+	bool GetActive();
 
 	//UPROPERTY(BlueprintReadWrite)
-	foo SwitchFunction = nullptr;
+	//AActor* SwitchActor = nullptr;
+	//UPROPERTY(BlueprintReadWrite)
+	//TSubclassOf<AActor> SwitchActorType = nullptr;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	bool CanDeactivate = false;
+
+	bool IsActive = false;
 };

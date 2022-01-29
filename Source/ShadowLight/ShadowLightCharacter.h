@@ -36,6 +36,11 @@ public:
 	UFUNCTION()
 	void ReleasePush();
 	
+	UFUNCTION()
+	void PressInteract();
+	UFUNCTION()
+	void ReleaseInteract();
+	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = PlayerComponents)
 	class USceneComponent* SceneCmp;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = PlayerComponents)
@@ -60,4 +65,7 @@ public:
 
   UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	FVector BoxCollisionSize = FVector(50.0f, 50.0f, 50.0f);
+
+
+	bool Interact = false;
 };
