@@ -80,7 +80,6 @@ void UAnimation_C::InitComponent(UStaticMeshComponent* smCmp)
   FVector loc(center.X * scale.X * 100.0f - frameSize.X * scale.X * 50.0f,
               center.Y * scale.Y * 100.0f - frameSize.Y * scale.Y * 50.0f,
               0.0f);
-  GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Blue, FVector(loc.Y, loc.X, 0.0f).ToString());
   StaticMeshCmp->SetRelativeLocation(FVector(loc.Y, loc.X, 0.0f));
 }
 
