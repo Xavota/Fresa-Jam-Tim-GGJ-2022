@@ -32,7 +32,8 @@ ALight2D::isInLight(AActor* actor)
 
 bool ALight2D::isPosInLight(const FVector2D& _location)
 {
-	
+
+	if(!isOn)		return false;
 	Line line;
 	//auto _locationShader = _location/resolution;
 	line.setFromPoints(_location,locationWorld);
@@ -46,6 +47,7 @@ bool ALight2D::isPosInLight(const FVector2D& _location)
 
 float ALight2D::intensityAt(AActor* actor)
 {
+	if(!isOn) return 1;
 	auto _location = FVector2D(actor->GetActorLocation().X,actor->GetActorLocation().Y);
 	float intensityAt = (_location-locationWorld).Size()/intensity;
 	if(!isInLight(actor)){
@@ -66,6 +68,7 @@ float ALight2D::intensityAt(AActor* actor)
 
 bool ALight2D::isInRange(const FVector2D& _location)
 {
+	if(!isOn) return false;
 	if((_location-locationWorld).Size()>intensity){
 		return false;
 	}
@@ -154,6 +157,7 @@ void ALight2D::calculateLight()
 	lines.clear();
 	ordered.clear();
 	temp.clear();
+	if(!isOn) return;
 	auto world = GetWorld();
 	TArray<AActor*> found;
 	UGameplayStatics::GetAllActorsOfClass(world,ASceneObject::StaticClass(),found);
@@ -164,6 +168,7 @@ void ALight2D::calculateLight()
 
 	float foundNum =found.Num();
 	int actual = 0;
+
 	for(i=0;i<foundNum;++i){
 		auto object = Cast<ASceneObject>(found[i]);
 

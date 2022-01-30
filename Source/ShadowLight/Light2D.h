@@ -96,6 +96,7 @@ public:
 	UPROPERTY(EditAnywhere,BlueprintReadOnly)
 	float resolution = 1;
 
-
+	UPROPERTY(EditAnywhere,BlueprintReadOnly)
+	bool isOn = true;
 
 };
