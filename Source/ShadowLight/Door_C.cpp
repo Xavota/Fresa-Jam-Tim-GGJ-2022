@@ -2,7 +2,10 @@
 
 
 #include "Door_C.h"
+
+#include "SLGameInstance.h"
 #include "Kismet/GameplayStatics.h"
+
 #include "Components/BoxComponent.h"
 #include "DrawDebugHelpers.h"
 #include "SceneObject.h"
@@ -26,6 +29,14 @@ void UDoor_C::BeginPlay()
 	Super::BeginPlay();
 
 	// ...
+
+  FSceneObjectSaveData data;
+  USLGameInstance* gInst = Cast<USLGameInstance>(UGameplayStatics::GetGameInstance(GetWorld()));
+  if (gInst && gInst->GetObjectData(GetOwner()->GetFullName(), data))
+  {
+    CanPass = data.DoorBoolean;
+  }
+
   LoadSceneNames = { LoadSceneUp, LoadSceneRight, LoadSceneDown, LoadSceneLeft };
 }
 
@@ -138,5 +149,12 @@ void UDoor_C::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponen
 void UDoor_C::SetCanPass(bool can)
 {
   CanPass = can;
+  USLGameInstance* gInst = Cast<USLGameInstance>(UGameplayStatics::GetGameInstance(GetWorld()));
+  if (gInst)
+  {
+    FSceneObjectSaveData data;
+    data.DoorBoolean = CanPass;
+    gInst->SaveObjectData(GetOwner()->GetFullName(), data);
+  }
 }
 

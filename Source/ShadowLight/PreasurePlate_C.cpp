@@ -2,6 +2,10 @@
 
 
 #include "PreasurePlate_C.h"
+
+#include "SLGameInstance.h"
+#include "Kismet/GameplayStatics.h"
+
 #include "Creature.h"
 #include "ShadowLightCharacter.h"
 #include "SceneObject.h"
@@ -23,7 +27,13 @@ void UPreasurePlate_C::BeginPlay()
 {
 	Super::BeginPlay();
 
-	// ...
+  // ...
+  FSceneObjectSaveData data;
+  USLGameInstance* gInst = Cast<USLGameInstance>(UGameplayStatics::GetGameInstance(GetWorld()));
+  if (gInst && gInst->GetObjectData(GetOwner()->GetFullName(), data))
+  {
+    IsActive = data.PreasurePlateBoolean;
+  }
 	
 }
 
@@ -108,6 +118,14 @@ void UPreasurePlate_C::SetSwitchActive(bool active)
   //{
   //  SwitchFunction(IsActive);
   //}
+
+  USLGameInstance* gInst = Cast<USLGameInstance>(UGameplayStatics::GetGameInstance(GetWorld()));
+  if (gInst)
+  {
+    FSceneObjectSaveData data;
+    data.PreasurePlateBoolean = IsActive;
+    gInst->SaveObjectData(GetOwner()->GetFullName(), data);
+  }
 }
 
 bool UPreasurePlate_C::GetActive()
