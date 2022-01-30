@@ -42,7 +42,7 @@ void UDetectContrary::TickComponent(float DeltaTime, ELevelTick TickType, FActor
 		if(light->isInRange(otherLocation)!=pawn->isLight){
 			GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString::Printf(TEXT("going out")));
 
-			steering->addForze((light->location-location).GetSafeNormal()*fear);
+			steering->addForze((light->locationWorld-location).GetSafeNormal()*fear);
 			continue;
 		}
 		if(light->isPosInLight(otherLocation)!=pawn->isLight){
