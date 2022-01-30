@@ -6,7 +6,7 @@
 #include "Creature.h"
 
 void UArrive::react(){
-	auto pawn = Cast<ACreature>(GetOwner());
+	auto pawn = Cast<AActor>(GetOwner());
 
 	auto steering = Cast<USteering>(pawn->GetComponentByClass(USteering::StaticClass()));
 

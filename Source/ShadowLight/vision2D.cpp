@@ -34,7 +34,7 @@ void Uvision2D::BeginPlay()
 void Uvision2D::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
-	auto pawn = Cast<APawn>(GetOwner());
+	auto pawn = Cast<AActor>(GetOwner());
 	auto location = FVector2D(pawn->GetActorLocation().X,pawn->GetActorLocation().Y);
 	auto steering = Cast<USteering>(pawn->GetComponentByClass(USteering::StaticClass()));
 	TArray<AActor*> found;
