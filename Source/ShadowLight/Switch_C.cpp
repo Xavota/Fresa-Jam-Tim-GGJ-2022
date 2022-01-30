@@ -3,6 +3,10 @@
 
 #include "Switch_C.h"
 
+#include "SLGameInstance.h"
+#include "Kismet/GameplayStatics.h"
+
+
 // Sets default values for this component's properties
 USwitch_C::USwitch_C()
 {
@@ -19,7 +23,13 @@ void USwitch_C::BeginPlay()
 {
 	Super::BeginPlay();
 
-	// ...
+  // ...
+  FSceneObjectSaveData data;
+  USLGameInstance* gInst = Cast<USLGameInstance>(UGameplayStatics::GetGameInstance(GetWorld()));
+  if (gInst && gInst->GetObjectData(GetOwner()->GetFullName(), data))
+  {
+    IsActive = data.SwitchBoolean;
+  }
 	
 }
 
@@ -62,6 +72,14 @@ void USwitch_C::ToggleSwitchActive()
 	//  Cast<SwitchActorType>(SwitchActor);
 	//	SwitchFunction(IsActive);
 	//}
+
+  USLGameInstance* gInst = Cast<USLGameInstance>(UGameplayStatics::GetGameInstance(GetWorld()));
+  if (gInst)
+  {
+    FSceneObjectSaveData data;
+    data.SwitchBoolean = IsActive;
+    gInst->SaveObjectData(GetOwner()->GetFullName(), data);
+  }
 }
 
 void USwitch_C::SetSwitchActive(bool active)
@@ -72,6 +90,14 @@ void USwitch_C::SetSwitchActive(bool active)
   //{
   //  SwitchFunction(IsActive);
   //}
+
+  USLGameInstance* gInst = Cast<USLGameInstance>(UGameplayStatics::GetGameInstance(GetWorld()));
+  if (gInst)
+  {
+    FSceneObjectSaveData data;
+    data.SwitchBoolean = IsActive;
+    gInst->SaveObjectData(GetOwner()->GetFullName(), data);
+  }
 }
 
 bool USwitch_C::GetActive()

@@ -2,6 +2,10 @@
 
 
 #include "Movement_C.h"
+
+#include "SLGameInstance.h"
+#include "Kismet/GameplayStatics.h"
+
 #include "DrawDebugHelpers.h"
 #include "Components/BoxComponent.h"
 #include "PushObject_C.h"
@@ -24,7 +28,6 @@ void UMovement_C::BeginPlay()
 	Super::BeginPlay();
 
 	// ...
-	
 }
 
 bool ChechLineTrace(UBoxComponent* BoxColl, FVector Orientation,
