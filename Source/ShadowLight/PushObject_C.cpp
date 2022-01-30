@@ -3,6 +3,10 @@
 
 #include "PushObject_C.h"
 
+#include "SLGameInstance.h"
+#include "Kismet/GameplayStatics.h"
+
+
 // Sets default values for this component's properties
 UPushObject_C::UPushObject_C()
 {
@@ -14,12 +18,18 @@ UPushObject_C::UPushObject_C()
 }
 
 
-// Called when the game starts
+// Called when the game startsd
 void UPushObject_C::BeginPlay()
 {
 	Super::BeginPlay();
 
-	// ...
+  // ...
+  FSceneObjectSaveData data;
+  USLGameInstance* gInst = Cast<USLGameInstance>(UGameplayStatics::GetGameInstance(GetWorld()));
+  if (gInst && gInst->GetObjectData(GetOwner()->GetFullName(), data))
+  {
+    GetOwner()->SetActorLocation(data.position);
+  }
 	
 }
 
@@ -35,5 +45,13 @@ void UPushObject_C::TickComponent(float DeltaTime, ELevelTick TickType, FActorCo
 void UPushObject_C::PushObject(FVector movement)
 {
   GetOwner()->SetActorLocation(GetOwner()->GetActorLocation() + movement);
+
+  USLGameInstance* gInst = Cast<USLGameInstance>(UGameplayStatics::GetGameInstance(GetWorld()));
+  if (gInst)
+  {
+    FSceneObjectSaveData data;
+    data.position = GetOwner()->GetActorLocation();
+    gInst->SaveObjectData(GetOwner()->GetFullName(), data);
+  }
 }
 

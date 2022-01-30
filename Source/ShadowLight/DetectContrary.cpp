@@ -30,19 +30,21 @@ void UDetectContrary::BeginPlay()
 // Called every frame
 void UDetectContrary::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
 {
+	
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 	auto pawn = Cast<ACreature>(GetOwner());
 	auto steering = Cast<USteering>(pawn->GetComponentByClass(USteering::StaticClass()));
+	steering->hasFear = false;
 	auto location = FVector2D(pawn->GetActorLocation().X,pawn->GetActorLocation().Y);
 	TArray<AActor*> found;
 	UGameplayStatics::GetAllActorsOfClass(GetWorld(),ALight2D::StaticClass(),found);
-	auto otherLocation = steering->forward*distance+location;
+	auto otherLocation = steering->desiredForward*distance+location;
 	for(AActor* actor:found){
 		auto light = Cast<ALight2D>(actor);
 		if(light->isInRange(otherLocation)!=pawn->isLight){
 			GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString::Printf(TEXT("going out")));
 
-			steering->addForze((light->location-location).GetSafeNormal()*fear);
+			steering->addForze((light->locationWorld-location).GetSafeNormal()*fear);
 			continue;
 		}
 		if(light->isPosInLight(otherLocation)!=pawn->isLight){
@@ -61,7 +63,9 @@ void UDetectContrary::TickComponent(float DeltaTime, ELevelTick TickType, FActor
 					if(light->isPosInLight(ans+rebote)==pawn->isLight){
 						rebote=-rebote;
 					}
-					steering->addForze(-rebote*fear);
+					steering->hasFear = true;;
+					steering->nullifier = rebote;
+					//steering->addForze(-rebote*fear);
 				}
 			}
 		}

@@ -34,11 +34,11 @@ void Uvision2D::BeginPlay()
 void Uvision2D::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
-	auto pawn = Cast<APawn>(GetOwner());
+	auto pawn = Cast<AActor>(GetOwner());
 	auto location = FVector2D(pawn->GetActorLocation().X,pawn->GetActorLocation().Y);
 	auto steering = Cast<USteering>(pawn->GetComponentByClass(USteering::StaticClass()));
 	TArray<AActor*> found;
-	UGameplayStatics::GetAllActorsOfClass(GetWorld(),APawn::StaticClass(),found);
+	UGameplayStatics::GetAllActorsOfClass(GetWorld(),AShadowLightCharacter::StaticClass(),found);
 	TArray<AActor*> lights;
 	UGameplayStatics::GetAllActorsOfClass(GetWorld(),ALight2D::StaticClass(),lights);
 	ALight2D* light = nullptr;
@@ -50,17 +50,18 @@ void Uvision2D::TickComponent(float DeltaTime, ELevelTick TickType, FActorCompon
 	for(auto other : found){
 		auto otherLocation = FVector2D(other->GetActorLocation().X,other->GetActorLocation().Y);
 		auto dif = otherLocation-location;
-		if(dif.Size()<distance && FVector2D::DotProduct(dif.GetSafeNormal(),steering->forward)>angle){
+		if(dif.Size()<near){
+			steering->pointToGo = otherLocation;
+			
+		}
+		else if(dif.Size()<distance && FVector2D::DotProduct(dif.GetSafeNormal(),steering->forward)>angle){
 			line.setFromPoints(location,otherLocation);
 			for(auto lin : light->lines){
 				if(line.intersect(lin,result)){
 					continue;
 				}
 			}
-			if(Cast<AShadowLightCharacter>(other)){
-				//GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString::Printf(TEXT("detecting")));
-				steering->pointToGo = otherLocation;
-			}
+			steering->pointToGo = otherLocation;
 		}
 	}
 }

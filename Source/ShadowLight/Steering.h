@@ -28,6 +28,9 @@ public:
 	void 
 	addForze(const FVector2D& forze);
 
+	void
+	nullifiMovementIn(const FVector2D& forze);
+
 	UPROPERTY(EditAnywhere,BlueprintReadWrite)
 	float maxVelocity = 200;
 
@@ -49,6 +52,8 @@ public:
 
 	UPROPERTY(EditAnywhere,BlueprintReadWrite)
 	FVector2D forward;
+
+	FVector2D desiredForward;
 	
 	FVector2D externalForze;
 
@@ -58,4 +63,9 @@ public:
 	FVector2D desiredVelocity;
 
 	FVector2D distance;
+
+	FVector2D nullifier;
+
+	bool
+	hasFear;
 };

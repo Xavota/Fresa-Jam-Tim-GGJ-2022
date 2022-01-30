@@ -26,6 +26,9 @@ public:
 
 	UPROPERTY(EditAnywhere,BlueprintReadWrite)
 	float distance = 0;
+
+	UPROPERTY(EditAnywhere,BlueprintReadWrite)
+	float near = 0;
 	
 	UPROPERTY(EditAnywhere,BlueprintReadWrite)
 	float angle = 0;

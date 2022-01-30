@@ -3,6 +3,7 @@
 
 #include "Steering.h"
 #include "Movement_C.h"
+#include "DrawDebugHelpers.h"
 //#include "Enemy.h"
 
 // Sets default values for this component's properties
@@ -36,7 +37,7 @@ USteering::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTi
 		DeltaTime = 1.f/60.f;
 	}
 
-	auto pawn = Cast<APawn>(GetOwner());
+	auto pawn = Cast<AActor>(GetOwner());
 
 	//if(pawn->isDead) return ;
 
@@ -46,7 +47,11 @@ USteering::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTi
 
 	distance = pointToGo-location;
 
-	desiredVelocity = distance.GetSafeNormal()*maxVelocity;
+	desiredForward = distance.GetSafeNormal();
+
+	desiredVelocity = desiredForward*maxVelocity;
+
+
 
 	if(distance.Size()<aceptanceRadius){
 		//desiredVelocity *=0;
@@ -66,7 +71,12 @@ USteering::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTi
 	if(velocity.Size() > maxVelocity){
 		velocity = velocity.GetSafeNormal()*maxVelocity;
 	}
-
+	if(hasFear){
+		//GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString::Printf(TEXT("fearing %f"),FVector2D::DotProduct(nullifier,velocity.GetSafeNormal())));
+		//velocity = FVector2D::ZeroVector;
+		
+		velocity = FVector2D::ZeroVector;
+	}
 	//pawn->AddActorWorldOffset(FVector(DeltaTime*velocity.X,DeltaTime*velocity.Y,0),true);
 	auto movement = Cast<UMovement_C>(pawn->GetComponentByClass(UMovement_C::StaticClass()));
 	movement->Move(velocity);
@@ -81,6 +91,11 @@ USteering::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTi
 void USteering::addForze(const FVector2D& forze)
 {
 	externalForze += forze;
+}
+
+void USteering::nullifiMovementIn(const FVector2D& forze)
+{
+	
 }
 
 

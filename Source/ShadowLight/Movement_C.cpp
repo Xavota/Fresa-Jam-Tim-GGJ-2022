@@ -2,9 +2,14 @@
 
 
 #include "Movement_C.h"
+
+#include "SLGameInstance.h"
+#include "Kismet/GameplayStatics.h"
+
 #include "DrawDebugHelpers.h"
 #include "Components/BoxComponent.h"
 #include "PushObject_C.h"
+#include "Collition_C.h"
 
 // Sets default values for this component's properties
 UMovement_C::UMovement_C()
@@ -23,7 +28,41 @@ void UMovement_C::BeginPlay()
 	Super::BeginPlay();
 
 	// ...
-	
+}
+
+bool ChechLineTrace(UBoxComponent* BoxColl, FVector Orientation,
+                    FVector absDirR, float offset, float offsetR,
+                    float distance, float& MinDistance, AActor** CloserActor,
+                    UWorld* World,
+                    FHitResult& Hit, FCollisionQueryParams& TraceParams)
+{
+  FVector Start = BoxColl->GetComponentLocation() + Orientation * offset + absDirR * offsetR;
+  FVector End = Start + Orientation * distance;
+
+  TArray<UActorComponent*> Colls_C;
+  bool hitted = false;
+  do
+  {
+    hitted = World->LineTraceSingleByChannel(Hit, Start, End, ECollisionChannel::ECC_WorldStatic, TraceParams);
+    if (hitted)
+    {
+      Colls_C = Hit.GetActor()->GetComponentsByClass(UCollition_C::StaticClass());
+
+      if (Colls_C.Num() <= 0)
+      {
+        TraceParams.AddIgnoredActor(Hit.GetActor());
+      }
+    }
+  } while (hitted && Colls_C.Num() <= 0);
+
+  if (hitted && Hit.Distance < MinDistance)
+  {
+    MinDistance = Hit.Distance;
+    *CloserActor = Hit.GetActor();
+
+    return true;
+  }
+  return false;
 }
 
 // Called every frame
@@ -40,64 +79,41 @@ void UMovement_C::TickComponent(float DeltaTime, ELevelTick TickType, FActorComp
   {
     if (!IsPushing)
     {
+      float MinDistance = 9999.9f;
+      AActor* CloserActor = nullptr;
+
+
+
       FVector extents = BoxColl->GetCollisionShape().GetBox();
 
-      //TArray<FVector> directions = { FVector::ForwardVector, FVector::BackwardVector, FVector::RightVector, FVector::LeftVector };
-      TArray<FVector> directions = { Orientation };
-      for (int i = 0; i < directions.Num(); ++i)
+      FVector absDir = Orientation.GetAbs();
+      FVector absDirR = FVector(absDir.Y, -absDir.X, 0.0f);
+
+      float offset = (extents * absDir).Size();
+      float offsetR = (extents * absDirR).Size();
+      float distance = 20.0f;
+
+      FCollisionQueryParams TraceParams;
+      FHitResult Hit;
+
+
+
+      bool hitted = ChechLineTrace(BoxColl, Orientation, absDirR, offset, offsetR, distance, MinDistance, &CloserActor, GetWorld(), Hit, TraceParams);
+
+      absDirR = -absDirR;
+
+      bool hitted2 = ChechLineTrace(BoxColl, Orientation, absDirR, offset, offsetR, distance, MinDistance, &CloserActor, GetWorld(), Hit, TraceParams);
+
+
+
+      if (hitted || hitted2)
       {
-        float MinDistance = 9999.9f;
-        AActor* CloserActor = nullptr;
-
-
-
-        FVector absDir = directions[i].GetAbs();
-        FVector absDirR = FVector(absDir.Y, -absDir.X, 0.0f);
-
-        float offset = (extents * absDir).Size();
-        float offsetR = (extents * absDirR).Size();
-        float distance = 20.0f;
-
-        FCollisionQueryParams TraceParams;
-        FHitResult Hit;
-
-
-
-        FVector Start = BoxColl->GetComponentLocation() + directions[i] * offset + absDirR * offsetR;
-        FVector End = Start + directions[i] * distance;
-        bool hitted = GetWorld()->LineTraceSingleByChannel(Hit, Start, End, ECollisionChannel::ECC_WorldStatic, TraceParams);
-
-        if (hitted)
+        TArray<UActorComponent*> PushCs = CloserActor->GetComponentsByClass(UPushObject_C::StaticClass());
+        if (PushCs.Num() != 0)
         {
-          MinDistance = Hit.Distance;
-          CloserActor = Hit.GetActor();
-        }
-
-
-
-        absDirR = -absDirR;
-
-        Start = BoxColl->GetComponentLocation() + directions[i] * offset + absDirR * offsetR;
-        End = Start + directions[i] * distance;
-        bool hitted2 = GetWorld()->LineTraceSingleByChannel(Hit, Start, End, ECollisionChannel::ECC_WorldStatic, TraceParams);
-
-        if (hitted2 && Hit.Distance < MinDistance)
-        {
-          MinDistance = Hit.Distance;
-          CloserActor = Hit.GetActor();
-        }
-
-
-
-        if (hitted || hitted2)
-        {
-          TArray<UActorComponent*> PushCs = CloserActor->GetComponentsByClass(UPushObject_C::StaticClass());
-          if (PushCs.Num() != 0)
-          {
-            IsPushing = true;
-            PushingActor = CloserActor;
-            PushingDirection = directions[i];
-          }
+          IsPushing = true;
+          PushingActor = CloserActor;
+          PushingDirection = Orientation;
         }
       }
     }
@@ -150,29 +166,11 @@ void UMovement_C::TickComponent(float DeltaTime, ELevelTick TickType, FActorComp
 
 
 
-        FVector Start = BoxColl->GetComponentLocation() + directions[i] * offset + absDirR * offsetR;
-        FVector End = Start + directions[i] * distance;
-        bool hitted = GetWorld()->LineTraceSingleByChannel(Hit, Start, End, ECollisionChannel::ECC_WorldStatic, TraceParams);
+        bool hitted = ChechLineTrace(BoxColl, directions[i], absDirR, offset, offsetR, distance, MinDistance, &CloserActor, GetWorld(), Hit, TraceParams);
     
-        if (hitted)
-        {
-          MinDistance = Hit.Distance;
-          CloserActor = Hit.GetActor();
-        }
-    
-    
-
         absDirR = -absDirR;
 
-        Start = BoxColl->GetComponentLocation() + directions[i] * offset + absDirR * offsetR;
-        End = Start + directions[i] * distance;
-        bool hitted2 = GetWorld()->LineTraceSingleByChannel(Hit, Start, End, ECollisionChannel::ECC_WorldStatic, TraceParams);
-    
-        if (hitted2 && Hit.Distance < MinDistance)
-        {
-          MinDistance = Hit.Distance;
-          CloserActor = Hit.GetActor();
-        }
+        bool hitted2 = ChechLineTrace(BoxColl, directions[i], absDirR, offset, offsetR, distance, MinDistance, &CloserActor, GetWorld(), Hit, TraceParams);
 
 
     
@@ -191,25 +189,13 @@ void UMovement_C::TickComponent(float DeltaTime, ELevelTick TickType, FActorComp
 
     TArray<UBoxComponent*> PushCollisions;
 
-    if (posibleMovement.Size() > 0.0f)
+    TArray<UActorComponent*> PushColls = PushingActor->GetComponentsByClass(UBoxComponent::StaticClass());
+    if (PushColls.Num() > 0)
     {
-      TArray<UActorComponent*> PushColls = PushingActor->GetComponentsByClass(UBoxComponent::StaticClass());
-
-      if (PushColls.Num() > 0)
-      {
-        PushCollisions.Add(Cast<UBoxComponent>(PushColls[0]));
-      }
+      PushCollisions.Add(Cast<UBoxComponent>(PushColls[0]));
     }
-    else
-    {
-      TArray<UActorComponent*> PushColls = PushingActor->GetComponentsByClass(UBoxComponent::StaticClass());
 
-      if (PushColls.Num() > 0)
-      {
-        PushCollisions.Add(Cast<UBoxComponent>(PushColls[0]));
-      }
-      PushCollisions.Add(BoxColl);
-    }
+    PushCollisions.Add(BoxColl);
 
 
 
@@ -239,62 +225,25 @@ void UMovement_C::TickComponent(float DeltaTime, ELevelTick TickType, FActorComp
 
 
 
-        FVector Start = coll->GetComponentLocation() + (absDir * mov).GetSafeNormal() * offset + absDirR * offsetR;
-        FVector End = Start + (absDir * mov).GetSafeNormal() * distance;
-        bool tempHitted = GetWorld()->LineTraceSingleByChannel(Hit, Start, End, ECollisionChannel::ECC_WorldStatic, TraceParams);
-
-        if (tempHitted && Hit.Distance < MinDistance)
+        float TemDistance = 9999.9f;
+        AActor* TemActor = nullptr;
+        bool tempHitted = ChechLineTrace(coll, (absDir * mov).GetSafeNormal(), absDirR, offset, offsetR, distance, TemDistance, &TemActor, GetWorld(), Hit, TraceParams);
+        if (tempHitted && TemDistance < MinDistance && TemActor != PushingActor)
         {
-          MinDistance = Hit.Distance;
-          CloserActor = Hit.GetActor();
+          MinDistance = TemDistance;
+          CloserActor = TemActor;
           hitted = true;
         }
-
-        if (DebugLine)
-        {
-          DrawDebugLine(
-            GetWorld(),
-            Start,
-            End,
-            FColor(255, 0, 0),
-            false, DebugLineTime, 0,
-            DebugLineThickness
-          );
-        }
-
-
 
         absDirR = -absDirR;
 
-        Start = coll->GetComponentLocation() + (absDir * mov).GetSafeNormal() * offset + absDirR * offsetR;
-        End = Start + (absDir * mov).GetSafeNormal() * distance;
-        tempHitted = GetWorld()->LineTraceSingleByChannel(Hit, Start, End, ECollisionChannel::ECC_WorldStatic, TraceParams);
-
-        if (tempHitted && Hit.Distance < MinDistance)
+        tempHitted = ChechLineTrace(coll, (absDir * mov).GetSafeNormal(), absDirR, offset, offsetR, distance, TemDistance, &TemActor, GetWorld(), Hit, TraceParams);
+        if (tempHitted && TemDistance < MinDistance && TemActor != PushingActor)
         {
-          MinDistance = Hit.Distance;
-          CloserActor = Hit.GetActor();
+          MinDistance = TemDistance;
+          CloserActor = TemActor;
           hitted = true;
         }
-
-        if (DebugLine)
-        {
-          DrawDebugLine(
-            GetWorld(),
-            Start,
-            End,
-            FColor(255, 0, 0),
-            false, DebugLineTime, 0,
-            DebugLineThickness
-          );
-        }
-      }
-
-
-
-      if (DebugData)
-      {
-        GEngine->AddOnScreenDebugMessage(-1, DebugDataTime, FColor::Green, hitted ? "Hitted" : "Meh");
       }
 
 
@@ -322,5 +271,10 @@ void UMovement_C::Move(FVector2D movement)
 void UMovement_C::SetPushing(bool push)
 {
   Pushing = push;
+}
+
+FVector UMovement_C::GetOrientation()
+{
+  return Orientation;
 }
 
