@@ -4,6 +4,7 @@
 #include "Creature_C.h"
 #include "Kismet/GameplayStatics.h"
 #include "Light2D.h"
+#include "Steering.h"
 
 // Sets default values for this component's properties
 UCreature_C::UCreature_C()
@@ -48,6 +49,11 @@ void UCreature_C::TickComponent(float DeltaTime, ELevelTick TickType, FActorComp
 
 void UCreature_C::Die()
 {
+  UActorComponent* steerCmp = GetOwner()->GetComponentByClass(USteering::StaticClass());
+  if (steerCmp)
+  {
+    Cast<USteering>(steerCmp)->maxVelocity = 0;
+  }
   IsAlive = false;
 }
 

@@ -10,6 +10,7 @@
 #include "ShadowLightCharacter.h"
 #include "SceneObject.h"
 #include "Collition_C.h"
+#include "Creature_C.h"
 
 // Sets default values for this component's properties
 UPreasurePlate_C::UPreasurePlate_C()
@@ -67,6 +68,12 @@ void UPreasurePlate_C::TickComponent(float DeltaTime, ELevelTick TickType, FActo
     {
       TArray<UActorComponent*> Colls_C = act->GetComponentsByClass(UCollition_C::StaticClass());
       if (Colls_C.Num() > 0)
+      {
+        pressed = true;
+        break;
+      }
+      TArray<UActorComponent*> Creats_C = act->GetComponentsByClass(UCreature_C::StaticClass());
+      if (Creats_C.Num() > 0)
       {
         pressed = true;
         break;
