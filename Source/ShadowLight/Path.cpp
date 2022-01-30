@@ -15,13 +15,20 @@ UPath::UPath()
 	// ...
 }
 
+void UPath::BeginPlay()
+{
+}
+
 void UPath::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
 {
 	auto pawn = Cast<ACreature>(GetOwner());
 
 	auto steering = Cast<USteering>(pawn->GetComponentByClass(USteering::StaticClass()));
 
-	steering->pointToGo = FVector2D(path[actual]->GetActorLocation().X,path[actual]->GetActorLocation().Y);
+	if (path[actual])
+  {
+    steering->pointToGo = FVector2D(path[actual]->GetActorLocation().X, path[actual]->GetActorLocation().Y);
+	}
 }
 
 void UPath::react()

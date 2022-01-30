@@ -32,14 +32,17 @@ void UCreature_C::TickComponent(float DeltaTime, ELevelTick TickType, FActorComp
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 
   // ...
+  bool isInLight = false;
   TArray<AActor*> found;
   UGameplayStatics::GetAllActorsOfClass(GetWorld(), ALight2D::StaticClass(), found);
   for (AActor* actor : found) {
-    if (Cast<ALight2D>(actor)->isInLight(GetOwner()) != IsLight) {
-      //GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString::Printf(TEXT("ded")));
-      Die();
-    }
+    isInLight |= Cast<ALight2D>(actor)->isInLight(GetOwner());
 
+  }
+
+  if (isInLight != IsLight)
+  {
+    Die();
   }
 }
 
