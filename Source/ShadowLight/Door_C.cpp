@@ -65,6 +65,15 @@ bool ChechLineTraceDoor(UBoxComponent* BoxColl, FVector Orientation,
     }
   } while (hitted && !ShadowChar);
 
+  DrawDebugLine(
+    World,
+    Start,
+    End,
+    FColor(255, 0, 0),
+    false, -1, 0,
+    5.0f
+  );
+
   if (hitted && Hit.Distance < MinDistance)
   {
     MinDistance = Hit.Distance;
@@ -91,9 +100,9 @@ void UDoor_C::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponen
   if (CanPass)
   {
     TArray<FVector> Directions;
-    Directions.Add(FVector::UpVector);
+    Directions.Add(FVector::ForwardVector);
     Directions.Add(FVector::RightVector);
-    Directions.Add(FVector::DownVector);
+    Directions.Add(FVector::BackwardVector);
     Directions.Add(FVector::LeftVector);
     for (int i = 0; i < Directions.Num(); ++i)
     {
@@ -114,7 +123,7 @@ void UDoor_C::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponen
 
       float offset = (extents * absDir).Size();
       float offsetR = (extents * absDirR).Size();
-      float distance = 20.0f;
+      float distance = 30.0f;
 
       FCollisionQueryParams TraceParams;
       FHitResult Hit;

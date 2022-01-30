@@ -15,6 +15,9 @@ public:
 	// Sets default values for this component's properties
 	UPath();
 
+	// Called when the game starts
+	virtual void BeginPlay() override;
+
   virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
 
