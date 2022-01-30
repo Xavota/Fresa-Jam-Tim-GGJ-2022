@@ -167,3 +167,47 @@ void UDoor_C::SetCanPass(bool can)
   }
 }
 
+bool UDoor_C::PlayerIsTouching()
+{
+  TArray<FVector> Directions;
+  Directions.Add(FVector::ForwardVector);
+  Directions.Add(FVector::RightVector);
+  Directions.Add(FVector::BackwardVector);
+  Directions.Add(FVector::LeftVector);
+  for (int i = 0; i < Directions.Num(); ++i)
+  {
+    float MinDistance = 9999.9f;
+    AActor* CloserActor = nullptr;
+
+
+    ASceneObject* owner = Cast<ASceneObject>(GetOwner());
+    FVector extents = owner->BoxColl->GetCollisionShape().GetBox();
+
+    FVector absDir = Directions[i].GetAbs();
+    FVector absDirR = FVector(absDir.Y, -absDir.X, 0.0f);
+
+    float offset = (extents * absDir).Size();
+    float offsetR = (extents * absDirR).Size();
+    float distance = 30.0f;
+
+    FCollisionQueryParams TraceParams;
+    FHitResult Hit;
+
+
+
+    bool hitted = ChechLineTraceDoor(owner->BoxColl, Directions[i], absDirR, offset, offsetR, distance, MinDistance, &CloserActor, GetWorld(), Hit, TraceParams);
+
+    absDirR = -absDirR;
+
+    bool hitted2 = ChechLineTraceDoor(owner->BoxColl, Directions[i], absDirR, offset, offsetR, distance, MinDistance, &CloserActor, GetWorld(), Hit, TraceParams);
+
+
+
+    if (hitted || hitted2)
+    {
+      return true;
+    }
+  }
+  return false;
+}
+

@@ -27,6 +27,10 @@ public:
   UFUNCTION(BlueprintCallable)
   virtual void SetCanPass(bool can);
 
+
+  UFUNCTION(BlueprintCallable)
+  bool PlayerIsTouching();
+
   UPROPERTY(EditAnywhere, BlueprintReadWrite)
   FName LoadSceneUp;
   UPROPERTY(EditAnywhere, BlueprintReadWrite)
