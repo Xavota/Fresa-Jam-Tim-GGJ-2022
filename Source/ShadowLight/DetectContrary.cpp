@@ -42,7 +42,7 @@ void UDetectContrary::TickComponent(float DeltaTime, ELevelTick TickType, FActor
 	for(AActor* actor:found){
 		auto light = Cast<ALight2D>(actor);
 		if(light->isInRange(otherLocation)!=pawn->isLight){
-			GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString::Printf(TEXT("going out")));
+			//GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString::Printf(TEXT("going out")));
 
 			steering->addForze((light->locationWorld-location).GetSafeNormal()*fear);
 			continue;

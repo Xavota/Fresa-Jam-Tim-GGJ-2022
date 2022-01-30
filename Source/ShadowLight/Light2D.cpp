@@ -33,7 +33,7 @@ ALight2D::isInLight(AActor* actor)
 bool ALight2D::isPosInLight(const FVector2D& _location)
 {
 
-	if(!isOn)		return false;
+	if(!isOn)	return false;
 	Line line;
 	//auto _locationShader = _location/resolution;
 	line.setFromPoints(_location,locationWorld);
