@@ -42,5 +42,5 @@ void ACreature::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 }
 
 void ACreature::die(){
-	this->Destroy();
+	//this->Destroy();
 }

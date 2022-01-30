@@ -58,8 +58,8 @@ public:
 	UPROPERTY(BlueprintReadWrite)
 	FVector2D locationWorld;
 
-	UPROPERTY(BlueprintReadWrite)
-	FVector2D locationShader;
+	//UPROPERTY(BlueprintReadWrite)
+	//FVector2D locationShader;
 
 	FVector2D dist;
 	int o;

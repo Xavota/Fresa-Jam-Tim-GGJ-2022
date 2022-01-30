@@ -34,8 +34,8 @@ bool ALight2D::isPosInLight(const FVector2D& _location)
 {
 	
 	Line line;
-	auto _locationShader=_location/resolution;
-	line.setFromPoints(_locationShader,locationShader);
+	//auto _locationShader = _location/resolution;
+	line.setFromPoints(_location,locationWorld);
 	for(Line& lin : lines){
 		if(line.intersect(lin,result)){
 			return false;
@@ -160,7 +160,7 @@ void ALight2D::calculateLight()
 
 	locationWorld = FVector2D(GetActorLocation().X,GetActorLocation().Y);
 
-	locationShader = locationWorld/resolution;
+	//locationShader = locationWorld/resolution;
 
 	float foundNum =found.Num();
 	int actual = 0;
@@ -181,10 +181,10 @@ void ALight2D::calculateLight()
 		worldPoints.push_back(center+FVector(-box.X*1.5f,-box.Y*1.5f,0));
 
 
-		FVector2D point0 = FVector2D(worldPoints[actual*4+0].X, worldPoints[actual*4+0].Y)/resolution;
-		FVector2D point1 = FVector2D(worldPoints[actual*4+1].X, worldPoints[actual*4+1].Y)/resolution;
-		FVector2D point2 = FVector2D(worldPoints[actual*4+2].X, worldPoints[actual*4+2].Y)/resolution;
-		FVector2D point3 = FVector2D(worldPoints[actual*4+3].X, worldPoints[actual*4+3].Y)/resolution;
+		FVector2D point0 = FVector2D(worldPoints[actual*4+0].X, worldPoints[actual*4+0].Y);
+		FVector2D point1 = FVector2D(worldPoints[actual*4+1].X, worldPoints[actual*4+1].Y);
+		FVector2D point2 = FVector2D(worldPoints[actual*4+2].X, worldPoints[actual*4+2].Y);
+		FVector2D point3 = FVector2D(worldPoints[actual*4+3].X, worldPoints[actual*4+3].Y);
 		//if(!isInRange(point0)&&!isInRange(point1)&&!isInRange(point2)&&!isInRange(point3)) return;
 		points.push_back(point0);
 		points.push_back(point1);
@@ -205,9 +205,9 @@ void ALight2D::calculateLight()
 
 
 	points.push_back(FVector2D(0,0));
-	points.push_back(FVector2D(-lightArea,0));
-	points.push_back(FVector2D(0,-lightArea));
-	points.push_back(FVector2D(-lightArea,-lightArea));
+	points.push_back(FVector2D(-lightArea*resolution,0));
+	points.push_back(FVector2D(0,-lightArea*resolution));
+	points.push_back(FVector2D(-lightArea*resolution,-lightArea*resolution));
 
 	lines.push_back(Line());
 	lines.push_back(Line());
@@ -229,7 +229,7 @@ void ALight2D::calculateLight()
 	float actualAngle2;
 	//bool colided2;
 	for(i=0;i<actual*4+4;++i){
-		actualLine.setFromPoints(locationShader,points[i]);
+		actualLine.setFromPoints(locationWorld,points[i]);
 		colided = false;
 		minSize = FLT_MAX;
 		for(o=0;o<actual*4;++o){
@@ -237,7 +237,7 @@ void ALight2D::calculateLight()
 			if(points[i]!=lines[o].start && points[i]!=lines[o].end){
 				if(actualLine.intersect(lines[o],result) ){
 					colided = true;
-					FVector2D dif = result-locationShader;
+					FVector2D dif = result-locationWorld;
 					if(dif.Size()<minSize){
 						minSize = dif.Size();
 						actualResult = result;
@@ -251,7 +251,7 @@ void ALight2D::calculateLight()
 			}
 		}
 		if(!colided){
-			FVector2D dif = points[i]-locationShader;
+			FVector2D dif = points[i]-locationWorld;
 			actualAngle = atan2(dif.Y,dif.X);
 			ordered.insert({actualAngle,points[i]});
 			//DrawDebugLine(world,GetActorLocation(),worldPoints[i],colors[i%4]);
@@ -259,16 +259,16 @@ void ALight2D::calculateLight()
 
 			 angle2 = actualAngle - .01;
 
-			FVector2D vector1 = FVector2D(cos(angle1),sin(angle1))*lightArea*1.5f+locationShader;
-			FVector2D vector2 = FVector2D(cos(angle2),sin(angle2))*lightArea*1.5f+locationShader;
+			FVector2D vector1 = FVector2D(cos(angle1),sin(angle1))*lightArea*1.5f+locationWorld;
+			FVector2D vector2 = FVector2D(cos(angle2),sin(angle2))*lightArea*1.5f+locationWorld;
 
 			//DrawDebugLine(world,GetActorLocation(),FVector(vector1,worldPoints[i].Z),colors[i%4],false,-1.0,0,10);
 			//DrawDebugLine(world,GetActorLocation(),FVector(vector1,worldPoints[i].Z),colors[i%4],false,-1.0,0,10);
 
 
 			
-			newLine1.setFromPoints(locationShader,vector1);
-			newLine2.setFromPoints(locationShader,vector2);
+			newLine1.setFromPoints(locationWorld,vector1);
+			newLine2.setFromPoints(locationWorld,vector2);
 			colided2 = false;
 			minSize2 = FLT_MAX;
 			for(Line& lin : lines){
@@ -277,7 +277,7 @@ void ALight2D::calculateLight()
 				if(lin.intersect(newLine1,result2)){
 					//DrawDebugLine(world,GetActorLocation(),FVector(result2,worldPoints[i].Z),colors[i%4],false,-1.0,0,10);
 
-					FVector2D difer = result2-locationShader;
+					FVector2D difer = result2-locationWorld;
 					//ordered.insert({atan2(difer.Y,difer.X),result2});
 					colided2 = true;
 					vecSize = difer.Size();
@@ -305,7 +305,7 @@ void ALight2D::calculateLight()
 				if(lin.intersect(newLine2,result2)){
 					//DrawDebugLine(world,GetActorLocation(),FVector(result2,worldPoints[i].Z),colors[i%4],false,-1.0,0,10);
 
-					FVector2D difer = result2-locationShader;
+					FVector2D difer = result2-locationWorld;
 					//ordered.insert({atan2(difer.Y,difer.X),result2});
 					colided2 = true;
 					vecSize = difer.Size();
@@ -337,9 +337,9 @@ void ALight2D::calculateLight()
 	int size = temp.size();
 	for( i=0;i<size;++i){
 		FCanvasUVTri tri;
-		tri.V0_Pos = -locationShader;
-		tri.V1_Pos = -temp[i];
-		tri.V2_Pos = -temp[(i+1)%size];
+		tri.V0_Pos = -locationWorld/resolution;
+		tri.V1_Pos = -temp[i]/resolution;
+		tri.V2_Pos = -temp[(i+1)%size]/resolution;
 		tri.V0_Color = FLinearColor::Green;
 		tri.V1_Color = FLinearColor::Green;
 		tri.V2_Color = FLinearColor::Green;
