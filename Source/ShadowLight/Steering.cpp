@@ -43,7 +43,7 @@ USteering::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTi
 
 	FVector2D location(pawn->GetActorLocation().X,pawn->GetActorLocation().Y);
 
-	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString::Printf(TEXT("%f %f"),pointToGo.X,pointToGo.Y));
+	//GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString::Printf(TEXT("%f %f"),pointToGo.X,pointToGo.Y));
 
 	distance = pointToGo-location;
 
