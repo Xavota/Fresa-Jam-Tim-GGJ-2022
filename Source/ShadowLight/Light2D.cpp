@@ -203,11 +203,12 @@ void ALight2D::calculateLight()
 		++actual;
 	}
 
-
-	points.push_back(FVector2D(0,0));
-	points.push_back(FVector2D(-lightArea*resolution,0));
-	points.push_back(FVector2D(0,-lightArea*resolution));
-	points.push_back(FVector2D(-lightArea*resolution,-lightArea*resolution));
+	FVector2D esquinas(intensity,intensity);
+	FVector2D esquinas0(-intensity,intensity);
+	points.push_back(locationWorld-esquinas);
+	points.push_back(locationWorld-esquinas0);
+	points.push_back(locationWorld+esquinas0);
+	points.push_back(locationWorld+esquinas);
 
 	lines.push_back(Line());
 	lines.push_back(Line());
@@ -259,8 +260,8 @@ void ALight2D::calculateLight()
 
 			 angle2 = actualAngle - .01;
 
-			FVector2D vector1 = FVector2D(cos(angle1),sin(angle1))*lightArea*1.5f+locationWorld;
-			FVector2D vector2 = FVector2D(cos(angle2),sin(angle2))*lightArea*1.5f+locationWorld;
+			FVector2D vector1 = FVector2D(cos(angle1),sin(angle1))*lightArea*1.5f*resolution+locationWorld;
+			FVector2D vector2 = FVector2D(cos(angle2),sin(angle2))*lightArea*1.5f*resolution+locationWorld;
 
 			//DrawDebugLine(world,GetActorLocation(),FVector(vector1,worldPoints[i].Z),colors[i%4],false,-1.0,0,10);
 			//DrawDebugLine(world,GetActorLocation(),FVector(vector1,worldPoints[i].Z),colors[i%4],false,-1.0,0,10);
