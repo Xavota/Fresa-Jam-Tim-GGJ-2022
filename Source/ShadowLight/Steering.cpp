@@ -37,7 +37,7 @@ USteering::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTi
 		DeltaTime = 1.f/60.f;
 	}
 
-	auto pawn = Cast<APawn>(GetOwner());
+	auto pawn = Cast<AActor>(GetOwner());
 
 	//if(pawn->isDead) return ;
 
